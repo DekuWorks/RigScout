@@ -1,8 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
+import { formatMoney } from "@rigscout/shared";
 import { motion } from "framer-motion";
 import { Bell, Layers, PiggyBank, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
+import { DealScoreBadge } from "@/components/catalog/DealScoreBadge";
 import { apiFetch } from "@/lib/api";
+import { fetchDeals } from "@/lib/catalog-api";
 import { PriceChange } from "@/components/ui/PriceChange";
 import { Skeleton } from "@/components/ui/Skeleton";
 
@@ -26,6 +29,14 @@ export function DashboardPage() {
     retry: false,
   });
 
+  const deals = useQuery({
+    queryKey: ["deals-preview"],
+    queryFn: () => fetchDeals(),
+    retry: false,
+  });
+
+  const topDeal = deals.data?.best_deal_scores[0];
+
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <section className="rs-card overflow-hidden">
@@ -36,11 +47,12 @@ export function DashboardPage() {
               <span className="rs-gradient-text">Build better.</span>
             </h1>
             <p className="mt-3 max-w-lg text-[var(--muted)]">
-              Your RigScout overview — demo metrics until Phase 2–3 connect live data.
+              Overview with live MOCK catalog from the API — Discover, product charts, and Deals are
+              ready to explore.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/app/builds" className="rs-btn-primary">
-                + New Build
+              <Link to="/app/discover" className="rs-btn-primary">
+                Discover Parts
               </Link>
               <Link to="/app/deals" className="rs-btn-secondary">
                 Browse Deals
@@ -110,13 +122,27 @@ export function DashboardPage() {
 
         <div className="rs-card p-5">
           <h2 className="font-display text-lg font-semibold">Top deal right now</h2>
-          <p className="mt-4 font-medium">AMD Ryzen 7 7800X3D</p>
-          <p className="text-sm text-[var(--muted)]">Demo · Amazon placeholder</p>
-          <p className="mt-2 font-display text-2xl font-bold">$359.99</p>
-          <PriceChange deltaMinor={-8000} percent={18} />
-          <Link to="/app/deals" className="rs-btn-primary mt-4 w-full">
-            View Deal
-          </Link>
+          {deals.isLoading ? <Skeleton className="mt-4 h-24 w-full" /> : null}
+          {topDeal ? (
+            <>
+              <p className="mt-4 font-medium">{topDeal.name}</p>
+              <p className="text-sm text-[var(--muted)]">{topDeal.retailer} · MOCK</p>
+              <p className="mt-2 font-display text-2xl font-bold">
+                {formatMoney(topDeal.price_minor, topDeal.currency)}
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <DealScoreBadge score={topDeal.deal_score} compact />
+                <PriceChange deltaMinor={topDeal.price_delta_minor} />
+              </div>
+              <Link to={`/app/discover/${topDeal.slug}`} className="rs-btn-primary mt-4 w-full">
+                View Deal
+              </Link>
+            </>
+          ) : (
+            <p className="mt-4 text-sm text-[var(--muted)]">
+              Start the API to load live mock deals.
+            </p>
+          )}
         </div>
       </section>
     </div>

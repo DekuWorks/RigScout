@@ -2,7 +2,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
 import { DashboardPage } from "@/pages/DashboardPage";
+import { DealsPage } from "@/pages/DealsPage";
+import { DiscoverPage } from "@/pages/DiscoverPage";
 import { LandingPage } from "@/pages/LandingPage";
+import { ProductDetailPage } from "@/pages/ProductDetailPage";
 import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
@@ -22,16 +25,8 @@ export default function App() {
       <Route path="/app" element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
-          <Route
-            path="discover"
-            element={
-              <PlaceholderPage
-                title="Discover Parts"
-                description="Search, filters, deal-score sorting, and pagination arrive in Phase 3."
-                phase="Phase 3"
-              />
-            }
-          />
+          <Route path="discover" element={<DiscoverPage />} />
+          <Route path="discover/:slug" element={<ProductDetailPage />} />
           <Route
             path="builds"
             element={
@@ -42,16 +37,7 @@ export default function App() {
               />
             }
           />
-          <Route
-            path="deals"
-            element={
-              <PlaceholderPage
-                title="Deals"
-                description="Trending drops and deal scores arrive with catalog ingestion in Phase 3."
-                phase="Phase 3"
-              />
-            }
-          />
+          <Route path="deals" element={<DealsPage />} />
           <Route
             path="watchlist"
             element={

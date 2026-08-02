@@ -39,8 +39,12 @@
 - [ ] Live `supabase db reset` against local Docker *(requires Supabase CLI + Docker on the machine)*
 
 ### Phase 3 — Catalog and Price Data
-- [ ] Discover + product detail
-- [ ] Listings UI, mock ingestion job, history charts, deal scoring UI
+- [x] Discover Parts (search, filters, sort, pagination)
+- [x] Product detail (retailer compare, history chart, high/low, alternatives)
+- [x] Deals page (trending, largest drops, best scores, marketplace split)
+- [x] API demo catalog + deal score wiring (`/v1/products`, `/v1/deals`)
+- [ ] Live Supabase-backed catalog reads (demo API catalog used until DB seeded)
+- [ ] Official retailer API ingestion (needs credentials)
 
 ### Phase 4 — Build Lab
 - [ ] Build CRUD, totals, compatibility, share/export

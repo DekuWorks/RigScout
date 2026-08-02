@@ -1,5 +1,6 @@
 import { Bell, LogOut, Moon, Search, Sun } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/brand/Logo";
 import { useAuth } from "@/features/auth/useAuth";
 import { useThemeStore } from "@/stores/theme";
@@ -7,10 +8,19 @@ import { useThemeStore } from "@/stores/theme";
 export function Header() {
   const { theme, toggleTheme } = useThemeStore();
   const { user, profile, signOut, supabaseConfigured } = useAuth();
+  const navigate = useNavigate();
+  const [q, setQ] = useState("");
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Guest";
   const planLabel = profile?.plan_tier === "scout_pro" ? "Scout Pro" : "Free plan";
   const initials = displayName.slice(0, 2).toUpperCase();
+
+  function onSearch(e: FormEvent) {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (q.trim()) params.set("q", q.trim());
+    navigate(`/app/discover?${params.toString()}`);
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[var(--card-border)] bg-[var(--bg)]/80 px-4 backdrop-blur-md lg:px-6">
@@ -19,21 +29,25 @@ export function Header() {
       </div>
 
       <div className="mx-auto flex w-full max-w-xl flex-1 items-center">
-        <label className="relative w-full">
-          <span className="sr-only">Search parts, builds, or brands</span>
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]"
-            aria-hidden
-          />
-          <input
-            type="search"
-            placeholder="Search parts, builds, or brands..."
-            className="rs-input pl-10 pr-16"
-          />
-          <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-[var(--card-border)] px-1.5 py-0.5 text-[10px] text-[var(--muted)] sm:inline">
-            ⌘ K
-          </kbd>
-        </label>
+        <form className="relative w-full" onSubmit={onSearch}>
+          <label className="relative block w-full">
+            <span className="sr-only">Search parts, builds, or brands</span>
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]"
+              aria-hidden
+            />
+            <input
+              type="search"
+              placeholder="Search parts, builds, or brands..."
+              className="rs-input pl-10 pr-16"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+            <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-[var(--card-border)] px-1.5 py-0.5 text-[10px] text-[var(--muted)] sm:inline">
+              ⌘ K
+            </kbd>
+          </label>
+        </form>
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">
