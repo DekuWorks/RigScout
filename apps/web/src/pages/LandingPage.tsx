@@ -45,8 +45,8 @@ export function LandingPage() {
         </Link>
       </header>
 
-      <section className="relative mx-auto max-w-6xl overflow-hidden px-4 pb-16 pt-8 lg:px-6 lg:pb-24 lg:pt-14">
-        <div className="grid items-center gap-8 md:grid-cols-[1fr_1fr] lg:gap-6">
+      <section className="relative mx-auto max-w-6xl px-4 pb-16 pt-8 lg:px-6 lg:pb-24 lg:pt-14">
+        <div className="grid items-center gap-10 md:grid-cols-[1.05fr_0.95fr] lg:gap-8">
           <motion.div {...fadeUp} transition={{ duration: 0.45 }} className="relative z-10">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-rs-accent">
               {BRAND.tagline}
@@ -74,22 +74,22 @@ export function LandingPage() {
           <motion.div
             {...fadeUp}
             transition={{ duration: 0.5, delay: 0.08 }}
-            className="relative isolate flex items-center justify-center md:min-h-[22rem]"
+            className="relative isolate flex items-center justify-center md:min-h-[24rem]"
           >
             {/* Soft cyan light spill from the rig — not a frame */}
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 h-[70%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(0,194,255,0.22),transparent_68%)] blur-3xl"
+              className="pointer-events-none absolute left-[45%] top-[48%] h-[75%] w-[75%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(0,194,255,0.22),transparent_68%)] blur-3xl"
               aria-hidden
             />
             {/* Ground contact shadow */}
             <div
-              className="pointer-events-none absolute bottom-[6%] left-1/2 h-8 w-[55%] -translate-x-1/2 rounded-[100%] bg-black/50 blur-2xl"
+              className="pointer-events-none absolute bottom-[4%] left-1/2 h-8 w-[60%] -translate-x-1/2 rounded-[100%] bg-black/45 blur-2xl"
               aria-hidden
             />
             <img
-              src={`${pcHeroUrl}?v=cutout2`}
+              src={pcHeroUrl}
               alt="Custom gaming PC with cyan LED lighting"
-              className="relative z-10 w-full max-w-lg object-contain drop-shadow-[0_28px_50px_rgba(0,0,0,0.55)] md:max-w-none md:scale-110"
+              className="relative z-10 h-auto w-full max-w-md object-contain drop-shadow-[0_28px_50px_rgba(0,0,0,0.55)] sm:max-w-lg md:max-w-none"
             />
           </motion.div>
         </div>
