@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/*
+  RigScout design tokens — approved palette.
+  Primary #0D6EFD | Accent #00C2FF | Navy #0F172A | Slate #64748B | Off-white #F8FAFC
+*/
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  --color-rs-primary: #0d6efd;
+  --color-rs-accent: #00c2ff;
+  --color-rs-navy: #0f172a;
+  --color-rs-slate: #64748b;
+  --color-rs-offwhite: #f8fafc;
+  --color-rs-success: #10b981;
+  --color-rs-danger: #ef4444;
+  --color-rs-warning: #f59e0b;
+
+  --color-surface: #111827;
+  --color-surface-elevated: #1a2332;
+  --color-surface-muted: #0b1220;
+  --color-border: #1e293b;
+  --color-border-strong: #334155;
+
+  --radius-card: 0.75rem;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --bg: #f1f5f9;
+    --fg: #0f172a;
+    --muted: #64748b;
+    --card: #ffffff;
+    --card-border: #e2e8f0;
+    --glow: color-mix(in srgb, var(--color-rs-primary) 35%, transparent);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --bg: #0a0c12;
+    --fg: #f8fafc;
+    --muted: #94a3b8;
+    --card: #111827;
+    --card-border: #1e293b;
+    --glow: color-mix(in srgb, var(--color-rs-accent) 25%, transparent);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-dvh font-sans antialiased;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--color-rs-primary) 18%, transparent), transparent 60%),
+      radial-gradient(900px 500px at 90% 0%, color-mix(in srgb, var(--color-rs-accent) 12%, transparent), transparent 55%),
+      var(--bg);
+    color: var(--fg);
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-rs-primary) 40%, transparent);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-rs-accent;
+  }
+}
+
+@layer components {
+  .rs-card {
+    @apply rounded-[var(--radius-card)] border border-[var(--card-border)] bg-[var(--card)]/80 backdrop-blur-sm;
+    box-shadow: 0 1px 0 color-mix(in srgb, white 4%, transparent) inset;
+  }
+
+  .rs-card-hover {
+    @apply transition-[border-color,box-shadow,transform] duration-200;
+  }
+
+  .rs-card-hover:hover {
+    border-color: color-mix(in srgb, var(--color-rs-primary) 45%, var(--card-border));
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-rs-primary) 20%, transparent),
+      0 8px 30px -12px var(--glow);
+  }
+
+  .rs-gradient-text {
+    @apply bg-gradient-to-r from-rs-accent to-rs-primary bg-clip-text text-transparent;
+  }
+
+  .rs-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-rs-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 active:scale-[0.98] disabled:opacity-50;
+    box-shadow: 0 0 24px -8px var(--color-rs-primary);
+  }
+
+  .rs-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--card-border)] bg-transparent px-4 py-2.5 text-sm font-semibold text-[var(--fg)] transition hover:border-rs-primary/50 hover:bg-white/5 active:scale-[0.98];
+  }
+
+  .rs-input {
+    @apply w-full rounded-xl border border-[var(--card-border)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--fg)] placeholder:text-[var(--muted)] transition focus:border-rs-primary focus:ring-2 focus:ring-rs-primary/30;
+  }
+
+  .rs-skeleton {
+    @apply animate-pulse rounded-lg bg-white/10;
+  }
+
+  .price-down {
+    @apply text-rs-success;
+  }
+
+  .price-up {
+    @apply text-rs-danger;
+  }
+}

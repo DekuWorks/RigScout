@@ -1,0 +1,27 @@
+{
+  "name": "rigscout",
+  "private": true,
+  "version": "0.1.0",
+  "description": "RigScout — track PC parts, compare prices, and build smarter",
+  "workspaces": [
+    "apps/web",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=@rigscout/web",
+    "build:web": "npm run build --workspace=@rigscout/web",
+    "lint:web": "npm run lint --workspace=@rigscout/web",
+    "typecheck:web": "npm run typecheck --workspace=@rigscout/web",
+    "test:web": "npm run test --workspace=@rigscout/web",
+    "dev:api": "cd apps/api && uv run uvicorn src.main:app --reload --port 8000",
+    "lint:api": "cd apps/api && uv run ruff check .",
+    "test:api": "cd apps/api && uv run pytest",
+    "typecheck": "npm run typecheck:web",
+    "lint": "npm run lint:web && npm run lint:api",
+    "test": "npm run test:web && npm run test:api",
+    "build": "npm run build:web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

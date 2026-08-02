@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>RigScout</title>
+    <!--
+      GitHub Pages SPA fallback:
+      Copy index.html to 404.html during deploy (workflow), or serve this redirect shim.
+    -->
+    <script>
+      sessionStorage.setItem("rg-redirect", location.pathname + location.search + location.hash);
+      location.replace(document.querySelector("base")?.href || "/");
+    </script>
+  </head>
+  <body></body>
+</html>

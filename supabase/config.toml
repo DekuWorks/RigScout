@@ -1,0 +1,27 @@
+# Supabase local development config (Phase 1 stub).
+# Full migrations and RLS land in Phase 2.
+# Docs: https://supabase.com/docs/guides/cli/config
+
+project_id = "rigscout"
+
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173"]
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
