@@ -30,7 +30,8 @@ export function DealsPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rs-accent">Deals</p>
         <h1 className="mt-1 font-display text-3xl font-bold">Trending price drops</h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Best deal scores and largest recent drops from the MOCK catalog.
+          Best deal scores and largest recent drops
+          {query.data?.is_mock ? " from the MOCK catalog" : " from the live catalog"}.
         </p>
       </div>
 

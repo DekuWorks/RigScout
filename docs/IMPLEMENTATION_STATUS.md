@@ -43,7 +43,7 @@
 - [x] Product detail (retailer compare, history chart, high/low, alternatives)
 - [x] Deals page (trending, largest drops, best scores, marketplace split)
 - [x] API demo catalog + deal score wiring (`/v1/products`, `/v1/deals`)
-- [ ] Live Supabase-backed catalog reads (demo API catalog used until DB seeded)
+- [x] Live Supabase-backed catalog reads (prefer Supabase when seeded; demo fallback)
 - [ ] Official retailer API ingestion (needs credentials)
 
 ### Phase 4 — Build Lab
@@ -76,8 +76,9 @@
 - [x] Full test matrix: web lint/typecheck/test/build + API ruff/pytest (local + CI)
 - [x] API hosting scaffold (`apps/api/Dockerfile`, `railway.toml`, [API_HOSTING.md](./API_HOSTING.md))
 - [x] Live hosted API on Railway (`https://api-production-8587.up.railway.app`) + GitHub `API_BASE_URL` / `ALERT_JOB_TOKEN` / `VITE_API_BASE_URL`
-- [ ] Finish www dual-host Let’s Encrypt cert (`www` still presents `*.github.io`) — see [GITHUB_PAGES.md](./GITHUB_PAGES.md)
+- [x] Finish www dual-host Let’s Encrypt cert (`www` + apex on LE; Pages cert approved for both) — see [GITHUB_PAGES.md](./GITHUB_PAGES.md)
 - [x] Alert job schema parity (`retailer_listings.is_active` via migration `20260803000000`; pushed to hosted Supabase; evaluate-alerts returns 200 with no `is_active` errors)
+- [x] Settings: profile, theme, currency, region, notification prefs, privacy share default, JSON data export, account deletion (`/v1/account`)
 
 
 ---

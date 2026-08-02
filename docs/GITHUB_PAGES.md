@@ -1,7 +1,7 @@
 # GitHub Pages deployment
 
 **Canonical production domain:** [https://rigscout.co](https://rigscout.co)  
-**www (2026-08-02):** DNS `CNAME` → `dekuworks.github.io` is correct, but GitHub’s Pages cert is still **apex-only** (`domains: ["rigscout.co"]`). `https://www.rigscout.co` presents `CN=*.github.io` until dual-host issuance completes — use the apex URL. Recovery steps below.
+**www (2026-08-02, verified):** Dual-host Let’s Encrypt cert is live (`CN=rigscout.co`, SANs include `www.rigscout.co`). `https://www.rigscout.co` redirects to the apex. Enable **Enforce HTTPS** in Pages settings if not already on. Recovery steps below remain if DNS/cert regresses.
 
 ## Enable Pages
 

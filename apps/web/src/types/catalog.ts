@@ -21,6 +21,7 @@ export type ProductSummary = {
 
 export type ProductSearchResponse = {
   is_mock: boolean;
+  source?: "demo_catalog" | "supabase";
   total: number;
   page: number;
   page_size: number;
@@ -54,6 +55,7 @@ export type PricePoint = {
 
 export type ProductDetailResponse = {
   is_mock: boolean;
+  source?: "demo_catalog" | "supabase";
   product: ProductSummary & {
     specs: Array<{ key: string; value: string; unit: string | null }>;
   };
@@ -75,6 +77,7 @@ export type ProductDetailResponse = {
 
 export type DealsResponse = {
   is_mock: boolean;
+  source?: "demo_catalog" | "supabase";
   trending: DealCard[];
   largest_drops: DealCard[];
   best_deal_scores: DealCard[];

@@ -1,7 +1,7 @@
-"""Catalog + deals endpoints backed by the MOCK demo catalog (Phase 3).
+"""Catalog + deals endpoints.
 
-When Supabase is populated, a future iteration can prefer DB reads and keep
-this adapter as a fallback for offline demos.
+Prefer Supabase-backed catalog when the service role is configured and products
+exist; otherwise serve the in-memory MOCK demo catalog.
 """
 
 from __future__ import annotations
@@ -10,7 +10,13 @@ from datetime import timedelta
 
 from fastapi import APIRouter, HTTPException, Query
 
-from src.services.demo_catalog import get_product, list_products, product_summary
+from src.core.config import get_settings
+from src.services.catalog_store import (
+    get_catalog_product,
+    get_catalog_snapshot,
+    list_catalog_products,
+)
+from src.services.demo_catalog import product_summary
 
 router = APIRouter(prefix="/v1", tags=["catalog"])
 
@@ -20,9 +26,9 @@ SORT_OPTIONS = {"deal_score", "lowest_price", "price_drop", "name"}
 @router.get("/listings")
 async def list_mock_listings(q: str | None = Query(default=None)) -> dict[str, object]:
     """Backward-compatible flat listings endpoint."""
-    products = list_products()
+    snapshot = get_catalog_snapshot(get_settings())
     items: list[dict[str, object]] = []
-    for product in products:
+    for product in snapshot.products:
         for listing in product.listings:
             if q and q.lower() not in product.name.lower() and q.lower() not in product.brand.lower():
                 continue
@@ -40,11 +46,16 @@ async def list_mock_listings(q: str | None = Query(default=None)) -> dict[str, o
                     "availability": listing.availability,
                     "product_url": listing.product_url,
                     "deal_score": listing.deal_score,
-                    "is_mock": True,
+                    "is_mock": listing.is_mock,
                     "retailer": listing.retailer,
                 }
             )
-    return {"source": "demo_catalog", "is_mock": True, "count": len(items), "items": items}
+    return {
+        "source": snapshot.source,
+        "is_mock": snapshot.is_mock,
+        "count": len(items),
+        "items": items,
+    }
 
 
 @router.get("/products")
@@ -64,10 +75,13 @@ async def search_products(
     if sort not in SORT_OPTIONS:
         raise HTTPException(status_code=400, detail=f"sort must be one of {sorted(SORT_OPTIONS)}")
 
-    rows = [product_summary(p) for p in list_products()]
+    settings = get_settings()
+    snapshot = get_catalog_snapshot(settings)
+    products = snapshot.products
+    rows = [product_summary(p) for p in products]
 
-    def matches(row: dict[str, object], product_id: str) -> bool:
-        product = get_product(str(row["slug"]))
+    def matches(row: dict[str, object]) -> bool:
+        product = get_catalog_product(str(row["slug"]), settings)
         if product is None:
             return False
         if q:
@@ -97,7 +111,7 @@ async def search_products(
             return False
         return True
 
-    filtered = [row for row in rows if matches(row, str(row["id"]))]
+    filtered = [row for row in rows if matches(row)]
 
     if sort == "deal_score":
         filtered.sort(key=lambda r: (r["deal_score"] is None, -(r["deal_score"] or 0)))
@@ -113,17 +127,14 @@ async def search_products(
     end = start + page_size
     page_items = filtered[start:end]
 
-    brands = sorted({str(p.brand) for p in list_products()})
+    brands = sorted({str(p.brand) for p in products if p.brand})
     retailers = sorted(
-        {
-            listing.retailer_slug
-            for product in list_products()
-            for listing in product.listings
-        }
+        {listing.retailer_slug for product in products for listing in product.listings}
     )
 
     return {
-        "is_mock": True,
+        "is_mock": snapshot.is_mock,
+        "source": snapshot.source,
         "total": total,
         "page": page,
         "page_size": page_size,
@@ -131,14 +142,16 @@ async def search_products(
         "facets": {
             "brands": brands,
             "retailers": retailers,
-            "categories": sorted({p.category for p in list_products()}),
+            "categories": sorted({p.category for p in products}),
         },
     }
 
 
 @router.get("/products/{slug}")
 async def product_detail(slug: str, history_days: int = Query(default=90, ge=7, le=365)) -> dict[str, object]:
-    product = get_product(slug)
+    settings = get_settings()
+    snapshot = get_catalog_snapshot(settings)
+    product = get_catalog_product(slug, settings)
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
 
@@ -158,12 +171,20 @@ async def product_detail(slug: str, history_days: int = Query(default=90, ge=7, 
 
     alternatives = [
         product_summary(other)
-        for other in list_products()
+        for other in list_catalog_products(settings)
         if other.category == product.category and other.slug != product.slug
     ][:4]
 
+    disclosure = (
+        "Demo links point to example.com placeholders. "
+        "When live affiliate links are enabled, disclosures will appear here."
+        if snapshot.is_mock or summary["is_mock"]
+        else "Prices are loaded from the RigScout catalog. Affiliate disclosures appear when live retailer links are enabled."
+    )
+
     return {
-        "is_mock": True,
+        "is_mock": snapshot.is_mock,
+        "source": snapshot.source,
         "product": {
             **summary,
             "specs": [{"key": s.key, "value": s.value, "unit": s.unit} for s in product.specs],
@@ -181,7 +202,7 @@ async def product_detail(slug: str, history_days: int = Query(default=90, ge=7, 
                 "deal_score": listing.deal_score,
                 "product_url": listing.product_url,
                 "is_marketplace": listing.is_marketplace,
-                "is_mock": True,
+                "is_mock": listing.is_mock,
             }
             for listing in sorted(
                 product.listings,
@@ -196,10 +217,7 @@ async def product_detail(slug: str, history_days: int = Query(default=90, ge=7, 
             "deal_score_reliable": summary["deal_score"] is not None,
         },
         "alternatives": alternatives,
-        "affiliate_disclosure": (
-            "Demo links point to example.com placeholders. "
-            "When live affiliate links are enabled, disclosures will appear here."
-        ),
+        "affiliate_disclosure": disclosure,
     }
 
 
@@ -209,8 +227,10 @@ async def list_deals(
     marketplace_only: bool | None = None,
     limit: int = Query(default=20, ge=1, le=50),
 ) -> dict[str, object]:
+    settings = get_settings()
+    snapshot = get_catalog_snapshot(settings)
     cards: list[dict[str, object]] = []
-    for product in list_products():
+    for product in snapshot.products:
         if category and product.category != category:
             continue
         for listing in product.listings:
@@ -235,7 +255,7 @@ async def list_deals(
                     "condition": listing.condition,
                     "availability": listing.availability,
                     "is_marketplace": listing.is_marketplace,
-                    "is_mock": True,
+                    "is_mock": listing.is_mock,
                     "product_url": listing.product_url,
                 }
             )
@@ -248,7 +268,8 @@ async def list_deals(
     best_scores = [c for c in trending if c["deal_score"] is not None][:limit]
 
     return {
-        "is_mock": True,
+        "is_mock": snapshot.is_mock,
+        "source": snapshot.source,
         "trending": trending,
         "largest_drops": largest_drops,
         "best_deal_scores": best_scores,

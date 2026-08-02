@@ -34,6 +34,7 @@ class DemoListing:
     availability: str
     is_marketplace: bool
     deal_score: float | None = None
+    is_mock: bool = True
 
 
 @dataclass
@@ -461,5 +462,5 @@ def product_summary(product: DemoProduct) -> dict[str, object]:
         "deal_score": best.deal_score,
         "price_delta_minor": delta,
         "listing_count": len(product.listings),
-        "is_mock": True,
+        "is_mock": all(listing.is_mock for listing in product.listings),
     }

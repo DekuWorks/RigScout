@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
 from src.core.compatibility import CompatibilityItem, evaluate_compatibility
-from src.services.demo_catalog import get_product
+from src.services.catalog_store import get_catalog_product
 
 router = APIRouter(prefix="/v1/builds", tags=["builds"])
 
@@ -37,7 +37,7 @@ async def evaluate_build(payload: BuildEvaluationRequest) -> dict[str, object]:
     unknown_slugs: list[str] = []
 
     for requested in payload.items:
-        product = get_product(requested.slug) if requested.slug else None
+        product = get_catalog_product(requested.slug) if requested.slug else None
         if requested.slug and product is None:
             unknown_slugs.append(requested.slug)
             continue
@@ -45,7 +45,7 @@ async def evaluate_build(payload: BuildEvaluationRequest) -> dict[str, object]:
         if product:
             best_listing = min(
                 product.listings,
-                key=lambda listing: listing.price_minor + listing.shipping_minor,
+                key=lambda listing: listing.price_minor + (listing.shipping_minor or 0),
             )
             items.append(
                 CompatibilityItem(
@@ -70,7 +70,7 @@ async def evaluate_build(payload: BuildEvaluationRequest) -> dict[str, object]:
     if unknown_slugs:
         raise HTTPException(
             status_code=404,
-            detail={"message": "Unknown demo catalog products", "slugs": unknown_slugs},
+            detail={"message": "Unknown catalog products", "slugs": unknown_slugs},
         )
 
     return evaluate_compatibility(items)

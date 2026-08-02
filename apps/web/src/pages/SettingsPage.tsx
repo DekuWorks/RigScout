@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { PLAN_LIMITS } from "@rigscout/shared";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/features/auth/useAuth";
+import { deleteAccount, downloadJson, exportAccount } from "@/lib/account";
 import { useThemeStore } from "@/stores/theme";
 
 export function SettingsPage() {
@@ -12,9 +13,15 @@ export function SettingsPage() {
   const [region, setRegion] = useState(profile?.region ?? "US");
   const [notifyInApp, setNotifyInApp] = useState(profile?.notify_in_app ?? true);
   const [notifyEmail, setNotifyEmail] = useState(profile?.notify_email ?? true);
+  const [privacyShareBuilds, setPrivacyShareBuilds] = useState(
+    profile?.privacy_share_builds ?? false,
+  );
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
 
   useEffect(() => {
     setDisplayName(profile?.display_name ?? "");
@@ -22,10 +29,13 @@ export function SettingsPage() {
     setRegion(profile?.region ?? "US");
     setNotifyInApp(profile?.notify_in_app ?? true);
     setNotifyEmail(profile?.notify_email ?? true);
-  }, [profile]);
+    setPrivacyShareBuilds(profile?.privacy_share_builds ?? false);
+    if (profile?.theme === "dark" || profile?.theme === "light") {
+      setTheme(profile.theme);
+    }
+  }, [profile, setTheme]);
 
-  async function onSave(e: FormEvent) {
-    e.preventDefault();
+  async function saveProfile() {
     setMessage(null);
     setError(null);
     setSaving(true);
@@ -36,6 +46,7 @@ export function SettingsPage() {
         region,
         notify_in_app: notifyInApp,
         notify_email: notifyEmail,
+        privacy_share_builds: privacyShareBuilds,
         theme,
       });
       setMessage("Profile saved.");
@@ -46,12 +57,52 @@ export function SettingsPage() {
     }
   }
 
+  async function onSave(e: FormEvent) {
+    e.preventDefault();
+    await saveProfile();
+  }
+
+  async function onExport() {
+    setMessage(null);
+    setError(null);
+    setExporting(true);
+    try {
+      const payload = await exportAccount();
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadJson(`rigscout-export-${stamp}.json`, payload);
+      setMessage("Data export downloaded.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not export data");
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function onDeleteAccount() {
+    setMessage(null);
+    setError(null);
+    if (deleteConfirm !== "DELETE") {
+      setError('Type DELETE to confirm account deletion.');
+      return;
+    }
+    setDeleting(true);
+    try {
+      await deleteAccount();
+      await signOut();
+      setMessage("Account deleted.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not delete account");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="font-display text-3xl font-bold">Account & Settings</h1>
         <p className="mt-1 text-[var(--muted)]">
-          Manage profile, theme, notifications, and privacy preferences.
+          Manage profile, theme, notifications, privacy, and your data.
         </p>
       </div>
 
@@ -67,7 +118,7 @@ export function SettingsPage() {
 
       <section className="rs-card space-y-4 p-6">
         <h2 className="font-display text-lg font-semibold">Theme</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(["dark", "light"] as const).map((value) => (
             <button
               key={value}
@@ -79,6 +130,9 @@ export function SettingsPage() {
             </button>
           ))}
         </div>
+        <p className="text-xs text-[var(--muted)]">
+          Theme preference is saved with your profile when you click Save changes.
+        </p>
       </section>
 
       <section className="rs-card space-y-4 p-6">
@@ -176,6 +230,38 @@ export function SettingsPage() {
         </form>
       </section>
 
+      <section className="rs-card space-y-4 p-6">
+        <h2 className="font-display text-lg font-semibold">Privacy</h2>
+        <p className="text-sm text-[var(--muted)]">
+          Controls how sharing defaults behave for new builds. Existing public share links stay
+          public until you unshare them in Build Lab.
+        </p>
+        <label className="flex items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={privacyShareBuilds}
+            onChange={(e) => setPrivacyShareBuilds(e.target.checked)}
+            disabled={!user}
+          />
+          <span>
+            Prefer public sharing for builds
+            <span className="mt-0.5 block text-[var(--muted)]">
+              When enabled, new builds may default toward shareable. You still control each build’s
+              public link.
+            </span>
+          </span>
+        </label>
+        <button
+          type="button"
+          className="rs-btn-secondary"
+          disabled={!user || saving}
+          onClick={() => void saveProfile()}
+        >
+          Save privacy preference
+        </button>
+      </section>
+
       <section className="rs-card space-y-3 p-6">
         <h2 className="font-display text-lg font-semibold">Plan entitlements</h2>
         <p className="text-sm text-[var(--muted)]">
@@ -202,12 +288,46 @@ export function SettingsPage() {
         </div>
       </section>
 
+      <section className="rs-card space-y-3 p-6">
+        <h2 className="font-display text-lg font-semibold">Your data</h2>
+        <p className="text-sm text-[var(--muted)]">
+          Download a JSON export of your profile, builds, watchlists, alerts, and notifications.
+          Requires a signed-in session and a reachable API with Supabase service-role access.
+        </p>
+        <button
+          type="button"
+          className="rs-btn-secondary"
+          disabled={!user || !supabaseConfigured || exporting}
+          onClick={() => void onExport()}
+        >
+          {exporting ? "Preparing export…" : "Download data export"}
+        </button>
+      </section>
+
       <section className="rs-card space-y-3 border-rs-danger/30 p-6">
         <h2 className="font-display text-lg font-semibold text-rs-danger">Danger zone</h2>
         <p className="text-sm text-[var(--muted)]">
-          Account deletion and data export land with privacy controls in a later polish pass.
-          Contact support or use Supabase dashboard for manual deletion until then.
+          Permanently delete your auth account and cascaded RigScout rows (profile, builds,
+          watchlists, alerts, notifications). This cannot be undone.
         </p>
+        <label className="block text-sm">
+          <span className="mb-1.5 block font-medium">Type DELETE to confirm</span>
+          <input
+            className="rs-input"
+            value={deleteConfirm}
+            onChange={(e) => setDeleteConfirm(e.target.value)}
+            disabled={!user || !supabaseConfigured || deleting}
+            autoComplete="off"
+          />
+        </label>
+        <button
+          type="button"
+          className="rs-btn-secondary border-rs-danger/50 text-rs-danger"
+          disabled={!user || !supabaseConfigured || deleting || deleteConfirm !== "DELETE"}
+          onClick={() => void onDeleteAccount()}
+        >
+          {deleting ? "Deleting…" : "Delete my account"}
+        </button>
       </section>
     </div>
   );
