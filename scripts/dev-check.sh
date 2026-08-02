@@ -15,4 +15,10 @@ uv sync --group dev
 uv run ruff check .
 uv run pytest
 
-echo "==> Phase 1 checks passed"
+echo "==> Env validation (presence only; values never printed)"
+cd "$ROOT"
+chmod +x scripts/validate-env.sh
+# Local mode warns on missing optional vars; do not fail the full matrix on demo setups
+./scripts/validate-env.sh local || true
+
+echo "==> Full local matrix passed"

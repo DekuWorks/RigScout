@@ -3,13 +3,8 @@ name: API CI
 on:
   push:
     branches: [main, master]
-    paths:
-      - "apps/api/**"
-      - ".github/workflows/api.yml"
   pull_request:
-    paths:
-      - "apps/api/**"
-      - ".github/workflows/api.yml"
+    branches: [main, master]
 
 jobs:
   api:

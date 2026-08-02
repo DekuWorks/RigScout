@@ -46,7 +46,18 @@ curl -X POST http://127.0.0.1:8000/v1/jobs/evaluate-alerts \
   -H "X-Job-Token: dev-token"
 ```
 
-GitHub Action: `.github/workflows/evaluate-alerts.yml` (hourly). Set variable `API_BASE_URL` and secret `ALERT_JOB_TOKEN` to enable.
+GitHub Action: `.github/workflows/evaluate-alerts.yml` (hourly). Set repository variable `API_BASE_URL` and secret `ALERT_JOB_TOKEN` to enable (skipped safely until both exist).
+
+Host the FastAPI app first — see [API_HOSTING.md](./API_HOSTING.md) (Railway + Dockerfile). Then:
+
+```bash
+# Generate a token locally; store the same value in Railway + GitHub
+openssl rand -hex 32
+
+gh secret set ALERT_JOB_TOKEN -R DekuWorks/RigScout   # paste token when prompted
+gh variable set API_BASE_URL -R DekuWorks/RigScout --body "https://your-api.up.railway.app"
+gh variable set VITE_API_BASE_URL -R DekuWorks/RigScout --body "https://your-api.up.railway.app"
+```
 
 ## Email
 

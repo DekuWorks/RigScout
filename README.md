@@ -62,8 +62,10 @@ Without Supabase credentials the UI runs in **demo mode** (auth disabled, mock m
 ### 3. Verify
 
 ```bash
-chmod +x scripts/dev-check.sh
+chmod +x scripts/dev-check.sh scripts/validate-env.sh
 ./scripts/dev-check.sh
+./scripts/validate-env.sh local
+./scripts/validate-env.sh production-checklist
 ```
 
 Or individually:
@@ -73,6 +75,11 @@ npm run lint:web && npm run typecheck:web && npm run test:web && npm run build:w
 cd apps/api && uv run ruff check . && uv run pytest
 ```
 
+### Production
+
+- **Frontend:** GitHub Pages → [https://rigscout.co](https://rigscout.co) ([GITHUB_PAGES.md](docs/GITHUB_PAGES.md))
+- **API / alert cron:** host `apps/api` (Dockerfile) on Railway, then set `API_BASE_URL` + `ALERT_JOB_TOKEN` ([API_HOSTING.md](docs/API_HOSTING.md))
+
 ## Documentation
 
 | Doc | Topic |
@@ -80,6 +87,8 @@ cd apps/api && uv run ruff check . && uv run pytest
 | [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md) | Phase checklist & starting audit |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design |
 | [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) | Env vars & secrets |
+| [docs/API_HOSTING.md](docs/API_HOSTING.md) | Host FastAPI (Railway) for alert jobs |
+| [docs/AUTH_GOOGLE.md](docs/AUTH_GOOGLE.md) | Google SSO setup |
 | [docs/SUPABASE.md](docs/SUPABASE.md) | Local Supabase + Python interplay |
 | [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md) | Pages deployment |
 | [docs/ALERTS.md](docs/ALERTS.md) | Watchlists, alerts, notification job |

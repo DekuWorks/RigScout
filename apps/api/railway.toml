@@ -1,0 +1,12 @@
+# Railway service root directory must be apps/api (set in Railway UI or CLI).
+# Docs: https://docs.railway.com/guides/dockerfiles
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5

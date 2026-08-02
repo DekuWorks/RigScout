@@ -3,19 +3,8 @@ name: Web CI
 on:
   push:
     branches: [main, master]
-    paths:
-      - "apps/web/**"
-      - "packages/shared/**"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/web.yml"
   pull_request:
-    paths:
-      - "apps/web/**"
-      - "packages/shared/**"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/web.yml"
+    branches: [main, master]
 
 jobs:
   web:

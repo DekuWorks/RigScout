@@ -31,6 +31,17 @@ cd apps/api && uv run uvicorn src.main:app --reload --port 8000
 
 Health: [http://localhost:8000/health](http://localhost:8000/health)
 
+## Production host
+
+See [docs/API_HOSTING.md](../../docs/API_HOSTING.md). Quick Docker check:
+
+```bash
+docker build -t rigscout-api .
+docker run --rm -p 8000:8000 -e ENVIRONMENT=production rigscout-api
+```
+
+Railway: set service root to `apps/api` (uses `Dockerfile` + `railway.toml`).
+
 ## Test & lint
 
 ```bash

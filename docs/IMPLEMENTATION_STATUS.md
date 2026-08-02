@@ -71,8 +71,12 @@
 
 ### Phase 7 — Deployment
 - [x] Custom domain `rigscout.co` + Pages CNAME / HTTPS (apex)
-- [ ] Finish www dual-host Let’s Encrypt cert (`www` must not serve `*.github.io`) — see [GITHUB_PAGES.md](./GITHUB_PAGES.md)
-- [ ] Finalize secrets validation, full test matrix, hosted API for alert job
+- [x] GitHub Actions finalized (Web CI + API CI on every `main` push/PR; Pages; alert cron skip-safe)
+- [x] Secrets validation docs + `scripts/validate-env.sh` (local + production-checklist)
+- [x] Full test matrix: web lint/typecheck/test/build + API ruff/pytest (local + CI)
+- [x] API hosting scaffold (`apps/api/Dockerfile`, `railway.toml`, [API_HOSTING.md](./API_HOSTING.md))
+- [ ] Live hosted API + GitHub `API_BASE_URL` / `ALERT_JOB_TOKEN` (+ optional `VITE_API_BASE_URL`)
+- [ ] Finish www dual-host Let’s Encrypt cert (`www` still presents `*.github.io`) — see [GITHUB_PAGES.md](./GITHUB_PAGES.md)
 
 
 ---

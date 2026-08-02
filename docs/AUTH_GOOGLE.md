@@ -11,26 +11,31 @@ Dashboard: https://supabase.com/dashboard/project/tygapixcdiovpdgfqros
 - Redirect allow list includes `https://rigscout.co/**` and local Vite origins
 - Google provider **enabled** in Supabase Auth
 
-## Required Google Cloud step (one-time)
+## Create a fresh Google OAuth Web client
 
-Google must allow Supabase’s callback URL on the OAuth client.
+The previous client ID returned `deleted_client` — create a new one:
 
-1. Open [Google Cloud Credentials](https://console.cloud.google.com/apis/credentials?project=schedura-473723) (or your preferred GCP project).
-2. Edit the OAuth 2.0 Web client used for RigScout.
-3. Under **Authorized redirect URIs**, add:
+1. Open [Create OAuth client](https://console.cloud.google.com/auth/clients/create?project=schedura-473723) (or any GCP project you own).
+2. Application type: **Web application**
+3. Name: `RigScout Web`
+4. **Authorized JavaScript origins**
+   - `https://rigscout.co`
+   - `https://tygapixcdiovpdgfqros.supabase.co`
+   - `http://127.0.0.1:5173` (local)
+5. **Authorized redirect URIs**
+   - `https://tygapixcdiovpdgfqros.supabase.co/auth/v1/callback`
+6. Create → copy **Client ID** and **Client secret**
+7. Paste **Client ID** + **Client secret** into Supabase → Auth → Providers → Google.
 
-```
-https://tygapixcdiovpdgfqros.supabase.co/auth/v1/callback
-```
+Wired in Supabase Auth → Google:
 
-4. Under **Authorized JavaScript origins**, add:
+| Field | Value |
+|-------|--------|
+| Client ID | `432318329663-pe5do9i23fsp2ui0og2s4uitgbhjuql9.apps.googleusercontent.com` |
+| Client secret | set (stored only in Supabase; never commit) |
+| Callback URL | `https://tygapixcdiovpdgfqros.supabase.co/auth/v1/callback` |
 
-```
-https://tygapixcdiovpdgfqros.supabase.co
-https://rigscout.co
-```
-
-5. Save. Wait 1–5 minutes, then try **Continue with Google** on https://rigscout.co/login.
+Confirm the callback URL is listed under **Authorized redirect URIs** on that Google Cloud client.
 
 ## Demo email login
 
@@ -43,4 +48,4 @@ Seeded accounts (after remote seed):
 
 ## Local vs production `.env`
 
-Keep local Docker keys in repo-root `.env` for development. Production keys live in GitHub Actions secrets and `~/.config/rigscout/production.env` (never commit).
+Keep local Docker / Vite keys in repo-root `.env` for development. Production keys live in GitHub Actions secrets and the hosted API provider (Railway Variables). Never commit either file.
