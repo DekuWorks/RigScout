@@ -8,6 +8,9 @@ import { apiFetch } from "@/lib/api";
 import { fetchDeals } from "@/lib/catalog-api";
 import { PriceChange } from "@/components/ui/PriceChange";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useAuth } from "@/features/auth/useAuth";
+import { buildTotals, missingBuildCategories } from "@/lib/build-calculations";
+import { listBuilds } from "@/lib/builds";
 
 type HealthResponse = {
   status: string;
@@ -15,14 +18,21 @@ type HealthResponse = {
   version: string;
 };
 
-const stats = [
+const baseStats = [
   { label: "Saved this month", value: "$1,247", icon: PiggyBank, delta: -124700 },
   { label: "Price alerts", value: "14", icon: Bell },
   { label: "Deals found", value: "28", icon: Tag },
-  { label: "Builds", value: "4", icon: Layers },
 ];
 
+const heroModules = import.meta.glob<{ default: string }>("../assets/pc-hero.png", {
+  eager: true,
+});
+const pcHeroUrl = heroModules["../assets/pc-hero.png"]?.default;
+
 export function DashboardPage() {
+  const { user, supabaseConfigured } = useAuth();
+  const ownerId = user?.id ?? "guest";
+  const useRemote = supabaseConfigured && Boolean(user);
   const health = useQuery({
     queryKey: ["api-health"],
     queryFn: () => apiFetch<HealthResponse>("/health"),
@@ -34,48 +44,60 @@ export function DashboardPage() {
     queryFn: () => fetchDeals(),
     retry: false,
   });
+  const builds = useQuery({
+    queryKey: ["builds", ownerId, useRemote],
+    queryFn: () => listBuilds(ownerId, useRemote),
+  });
 
   const topDeal = deals.data?.best_deal_scores[0];
+  const stats = [
+    ...baseStats,
+    { label: "Builds", value: String(builds.data?.length ?? 0), icon: Layers },
+  ];
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <section className="rs-card overflow-hidden">
-        <div className="grid gap-6 p-6 md:grid-cols-[1.2fr_0.8fr] md:p-8">
-          <div>
+        <div className="grid items-stretch gap-0 md:grid-cols-[1.05fr_0.95fr]">
+          <div className="flex flex-col justify-center p-6 md:p-8">
             <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
               Track prices. Compare smarter.{" "}
               <span className="rs-gradient-text">Build better.</span>
             </h1>
             <p className="mt-3 max-w-lg text-[var(--muted)]">
-              Overview with live MOCK catalog from the API — Discover, product charts, and Deals are
-              ready to explore.
+              Scout parts across retailers, track full builds, and catch price drops before you buy.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/app/discover" className="rs-btn-primary">
-                Discover Parts
+              <Link to="/app/builds" className="rs-btn-primary">
+                + New Build
               </Link>
               <Link to="/app/deals" className="rs-btn-secondary">
                 Browse Deals
               </Link>
             </div>
-          </div>
-          <div className="rs-card border-rs-primary/20 bg-rs-primary/5 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-rs-accent">
-              API status
+            <p className="mt-4 text-xs text-[var(--muted)]">
+              API{" "}
+              {health.isLoading
+                ? "…"
+                : health.isError
+                  ? "offline (local demo still works)"
+                  : `${health.data?.status} · ${health.data?.service}`}
             </p>
-            {health.isLoading ? (
-              <Skeleton className="mt-3 h-10 w-full" />
-            ) : health.isError ? (
-              <p className="mt-3 text-sm text-[var(--muted)]">
-                API offline — start with <code className="text-rs-accent">npm run dev:api</code>
-              </p>
+          </div>
+          <div className="relative min-h-52 overflow-hidden bg-[#0a0c12] md:min-h-72">
+            {pcHeroUrl ? (
+              <img
+                src={pcHeroUrl}
+                alt="Custom gaming PC with cyan LED lighting"
+                className="h-full w-full object-cover object-center"
+              />
             ) : (
-              <p className="mt-3 text-sm">
-                <span className="font-semibold text-rs-success">{health.data?.status}</span>
-                {" · "}
-                {health.data?.service} v{health.data?.version}
-              </p>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(0,194,255,0.28),transparent_50%),linear-gradient(145deg,rgba(13,110,253,0.18),transparent)]" />
             )}
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[var(--card)] to-transparent"
+              aria-hidden
+            />
           </div>
         </div>
       </section>
@@ -107,17 +129,36 @@ export function DashboardPage() {
               Open Build Lab
             </Link>
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            {["Dream Build 2025", "Streaming Setup", "Mini ITX Beast"].map((name) => (
-              <div key={name} className="rounded-xl border border-[var(--card-border)] p-4">
-                <p className="font-medium">{name}</p>
-                <p className="mt-1 text-xs text-[var(--muted)]">Demo placeholder</p>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-rs-accent to-rs-primary" />
-                </div>
-              </div>
-            ))}
-          </div>
+          {builds.isLoading ? <Skeleton className="mt-4 h-28 w-full" /> : null}
+          {builds.data?.length ? (
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {builds.data.slice(0, 3).map((build) => {
+                const missing = missingBuildCategories(build);
+                return (
+                  <Link
+                    key={build.id}
+                    to={`/app/builds/${build.id}`}
+                    className="rounded-xl border border-[var(--card-border)] p-4 transition hover:border-rs-accent"
+                  >
+                    <p className="font-medium">{build.name}</p>
+                    <p className="mt-1 text-xs text-[var(--muted)]">
+                      {formatMoney(buildTotals(build).current, build.currency)} · {missing.length} missing
+                    </p>
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-rs-accent to-rs-primary"
+                        style={{ width: `${((8 - missing.length) / 8) * 100}%` }}
+                      />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : !builds.isLoading ? (
+            <div className="mt-4 rounded-xl border border-dashed border-[var(--card-border)] p-5 text-sm text-[var(--muted)]">
+              No builds yet. <Link className="text-rs-accent hover:underline" to="/app/builds">Create one in Build Lab.</Link>
+            </div>
+          ) : null}
         </div>
 
         <div className="rs-card p-5">

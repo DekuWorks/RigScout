@@ -16,7 +16,7 @@ export function Logo({ variant = "full", className = "", to = "/" }: LogoProps) 
           alt=""
           width={36}
           height={36}
-          className="h-9 w-9 rounded-xl shadow-md shadow-rs-primary/20"
+          className="h-9 w-9 rounded-xl object-cover"
         />
       )}
       {(variant === "full" || variant === "wordmark") && (

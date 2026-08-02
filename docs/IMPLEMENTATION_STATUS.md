@@ -36,7 +36,7 @@
 - [x] Protected routes (enforced when Supabase configured)
 - [x] Seed data (catalog, 90-day history, two demo users, builds/alerts)
 - [x] Isolation notes + smoke SQL + migration contract test
-- [ ] Live `supabase db reset` against local Docker *(requires Supabase CLI + Docker on the machine)*
+- [x] Live `supabase db reset` against local Docker (grants migration included)
 
 ### Phase 3 — Catalog and Price Data
 - [x] Discover Parts (search, filters, sort, pagination)
@@ -47,7 +47,13 @@
 - [ ] Official retailer API ingestion (needs credentials)
 
 ### Phase 4 — Build Lab
-- [ ] Build CRUD, totals, compatibility, share/export
+- [x] Build CRUD with Supabase ownership and browser-local demo fallback
+- [x] Component selection, preferred listings, purchase prices, totals, and targets
+- [x] Compatibility guidance API (socket, RAM, fit, clearance, cooling, PSU headroom)
+- [x] JSON/CSV exports and share-slug/link wiring
+- [x] Dashboard Build Lab summary and PC hero asset (`pc-hero.png`)
+- [ ] Public read-only shared build view *(link/slug is wired; view remains a stub)*
+- [ ] Higgsfield-native PC regen *(connector session expired; interim hero asset installed)*
 
 ### Phase 5 — Alerts and Realtime
 - [ ] Watchlists UI, alert evaluation job, notifications, optional email

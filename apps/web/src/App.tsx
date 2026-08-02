@@ -4,6 +4,8 @@ import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { DealsPage } from "@/pages/DealsPage";
 import { DiscoverPage } from "@/pages/DiscoverPage";
+import { BuildDetailPage } from "@/pages/BuildDetailPage";
+import { BuildsPage } from "@/pages/BuildsPage";
 import { LandingPage } from "@/pages/LandingPage";
 import { ProductDetailPage } from "@/pages/ProductDetailPage";
 import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
@@ -27,16 +29,8 @@ export default function App() {
           <Route index element={<DashboardPage />} />
           <Route path="discover" element={<DiscoverPage />} />
           <Route path="discover/:slug" element={<ProductDetailPage />} />
-          <Route
-            path="builds"
-            element={
-              <PlaceholderPage
-                title="Build Lab"
-                description="Create builds, compatibility guidance, and exports arrive in Phase 4."
-                phase="Phase 4"
-              />
-            }
-          />
+          <Route path="builds" element={<BuildsPage />} />
+          <Route path="builds/:buildId" element={<BuildDetailPage />} />
           <Route path="deals" element={<DealsPage />} />
           <Route
             path="watchlist"
