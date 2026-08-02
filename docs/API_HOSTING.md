@@ -75,8 +75,9 @@ docker run --rm -p 8000:8000 \
 ## Status
 
 - [x] Dockerfile + Railway config in repo
-- [ ] Live Railway (or other) service URL
-- [ ] GitHub `API_BASE_URL` + `ALERT_JOB_TOKEN` set
-- [ ] Pages `VITE_API_BASE_URL` pointed at hosted API
+- [x] Live Railway service URL: `https://api-production-8587.up.railway.app`
+- [x] GitHub `API_BASE_URL` + `ALERT_JOB_TOKEN` set
+- [x] Pages `VITE_API_BASE_URL` pointed at hosted API (redeploy Pages to pick up the variable)
 
-Until those are set, `.github/workflows/evaluate-alerts.yml` exits 0 with a skip message (safe no-op).
+Project dashboard: [RigScout on Railway](https://railway.com/project/cbef8716-03e4-4991-b4f0-be0e42fa6264)  
+Service root directory: `apps/api` (GitHub `DekuWorks/RigScout` → `main`).
