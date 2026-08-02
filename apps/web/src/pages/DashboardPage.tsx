@@ -84,12 +84,16 @@ export function DashboardPage() {
                   : `${health.data?.status} · ${health.data?.service}`}
             </p>
           </div>
-          <div className="relative min-h-52 overflow-hidden bg-[#0a0c12] md:min-h-72">
+          <div className="relative flex min-h-52 items-end justify-center overflow-hidden md:min-h-72">
+            <div
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_60%_45%,rgba(0,194,255,0.18),transparent_55%)]"
+              aria-hidden
+            />
             {pcHeroUrl ? (
               <img
-                src={pcHeroUrl}
+                src={`${pcHeroUrl}?v=cutout1`}
                 alt="Custom gaming PC with cyan LED lighting"
-                className="h-full w-full object-cover object-center"
+                className="relative z-10 h-full w-full max-h-80 object-contain object-bottom drop-shadow-[0_24px_40px_rgba(0,0,0,0.5)]"
               />
             ) : (
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(0,194,255,0.28),transparent_50%),linear-gradient(145deg,rgba(13,110,253,0.18),transparent)]" />

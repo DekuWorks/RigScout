@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BRAND } from "@rigscout/shared";
-import brandUrl from "@/assets/rigscout-brand.png";
+import pcHeroUrl from "@/assets/pc-hero.png";
 import { Logo } from "@/components/brand/Logo";
 
 const fadeUp = {
@@ -46,8 +46,8 @@ export function LandingPage() {
       </header>
 
       <section className="relative mx-auto max-w-6xl overflow-hidden px-4 pb-16 pt-8 lg:px-6 lg:pb-24 lg:pt-14">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <motion.div {...fadeUp} transition={{ duration: 0.45 }}>
+        <div className="grid items-center gap-8 md:grid-cols-[1fr_1fr] lg:gap-6">
+          <motion.div {...fadeUp} transition={{ duration: 0.45 }} className="relative z-10">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-rs-accent">
               {BRAND.tagline}
             </p>
@@ -74,13 +74,22 @@ export function LandingPage() {
           <motion.div
             {...fadeUp}
             transition={{ duration: 0.5, delay: 0.08 }}
-            className="relative"
+            className="relative isolate flex items-center justify-center md:min-h-[22rem]"
           >
-            <div className="absolute -inset-6 rounded-full bg-rs-primary/20 blur-3xl" aria-hidden />
+            {/* Soft cyan light spill from the rig — not a frame */}
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[70%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(0,194,255,0.22),transparent_68%)] blur-3xl"
+              aria-hidden
+            />
+            {/* Ground contact shadow */}
+            <div
+              className="pointer-events-none absolute bottom-[6%] left-1/2 h-8 w-[55%] -translate-x-1/2 rounded-[100%] bg-black/50 blur-2xl"
+              aria-hidden
+            />
             <img
-              src={brandUrl}
-              alt="RigScout brand identity — RS monogram with analytics magnifier"
-              className="relative mx-auto w-full max-w-md drop-shadow-2xl"
+              src={`${pcHeroUrl}?v=cutout2`}
+              alt="Custom gaming PC with cyan LED lighting"
+              className="relative z-10 w-full max-w-lg object-contain drop-shadow-[0_28px_50px_rgba(0,0,0,0.55)] md:max-w-none md:scale-110"
             />
           </motion.div>
         </div>
@@ -221,7 +230,12 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between lg:px-6">
           <Logo variant="wordmark" to="/" />
           <p>{BRAND.motto}</p>
-          <p>© {new Date().getFullYear()} RigScout</p>
+          <p>
+            © {new Date().getFullYear()}{" "}
+            <a href={BRAND.siteUrl} className="hover:text-[var(--fg)]">
+              {BRAND.domain}
+            </a>
+          </p>
         </div>
       </footer>
     </div>

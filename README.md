@@ -1,6 +1,7 @@
 # RigScout
 
-**Track. Compare. Build Smarter.**
+**Track. Compare. Build Smarter.**  
+**Site:** [https://rigscout.co](https://rigscout.co)
 
 RigScout helps PC builders find components, compare retailer prices, track complete builds, monitor price history, and receive deal alerts — approachable for beginners, useful for enthusiasts.
 

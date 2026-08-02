@@ -7,6 +7,8 @@ export const BRAND = {
   name: "RigScout",
   tagline: "Track. Compare. Build Smarter.",
   motto: "We scout. You build smarter.",
+  domain: "rigscout.co",
+  siteUrl: "https://rigscout.co",
 } as const;
 
 /** Approved RigScout palette — do not replace without design approval. */
