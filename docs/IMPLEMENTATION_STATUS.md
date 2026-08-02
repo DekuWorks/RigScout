@@ -77,7 +77,7 @@
 - [x] API hosting scaffold (`apps/api/Dockerfile`, `railway.toml`, [API_HOSTING.md](./API_HOSTING.md))
 - [x] Live hosted API on Railway (`https://api-production-8587.up.railway.app`) + GitHub `API_BASE_URL` / `ALERT_JOB_TOKEN` / `VITE_API_BASE_URL`
 - [ ] Finish www dual-host Let’s Encrypt cert (`www` still presents `*.github.io`) — see [GITHUB_PAGES.md](./GITHUB_PAGES.md)
-- [ ] Alert job schema parity (`retailer_listings.is_active` missing in remote Supabase — evaluate-alerts reaches API but listing lookup errors)
+- [x] Alert job schema parity (`retailer_listings.is_active` via migration `20260803000000`; pushed to hosted Supabase; evaluate-alerts returns 200 with no `is_active` errors)
 
 
 ---
