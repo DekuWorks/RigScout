@@ -14,7 +14,15 @@ supabase status   # copy URL + anon + service_role into .env
 supabase db reset # applies migrations + seed.sql (Phase 2+)
 ```
 
-Phase 1 includes `supabase/config.toml` and empty `migrations/`. Schema + RLS land in Phase 2.
+Phase 2 includes `supabase/migrations/20260802180000_phase2_schema.sql` and rich `seed.sql`.
+
+```bash
+supabase start
+supabase db reset
+# then copy API URL + anon key + service_role into root .env
+```
+
+Redirect URLs to allow locally: `http://localhost:5173/**` (Auth → URL configuration).
 
 ## How Supabase and Python work together
 

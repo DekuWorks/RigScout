@@ -1,0 +1,31 @@
+name: Supabase migration check
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "supabase/**"
+      - ".github/workflows/supabase.yml"
+  pull_request:
+    paths:
+      - "supabase/**"
+      - ".github/workflows/supabase.yml"
+
+jobs:
+  migration-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Verify migration defines required tables
+        working-directory: apps/api
+        run: |
+          uv sync --group dev
+          uv run pytest tests/test_migration_contract.py -v
+      - name: Basic SQL presence checks
+        run: |
+          test -f supabase/migrations/20260802180000_phase2_schema.sql
+          test -f supabase/seed.sql
+          grep -q "enable row level security" supabase/migrations/20260802180000_phase2_schema.sql

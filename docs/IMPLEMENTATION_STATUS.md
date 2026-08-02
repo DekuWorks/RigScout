@@ -5,12 +5,12 @@
 | Item | Status |
 |------|--------|
 | Repository files | **Empty** — only `.git` present |
-| Approved brand assets | Provided in Cursor chat (logo sheet, app icon, dashboard mockup) — **copied into repo** |
+| Approved brand assets | Provided in Cursor chat — **copied into repo** |
 | Prior application code | None |
-| Supabase project | Not configured in-repo |
+| Supabase project | Schema now in-repo (Phase 2); remote project still optional |
 | Live retailer credentials | None |
 
-**Conclusion:** Greenfield build. Phase 1 establishes monorepo foundation, design system, shell, env validation, docs, and clean builds.
+**Remote:** https://github.com/DekuWorks/RigScout
 
 ---
 
@@ -19,44 +19,34 @@
 ### Phase 1 — Foundation
 - [x] Audit repository and document starting state
 - [x] Preserve approved logos/icons/palette/UI concepts
-- [x] Configure monorepo (`apps/web`, `apps/api`, `packages/shared`, `supabase`, `docs`, workflows)
-- [x] Design system (tokens, typography, cards, buttons, price indicators)
-- [x] Responsive shell (desktop nav + mobile bottom nav)
-- [x] Landing page (hero + core sections scaffold)
-- [x] Auth page shells (await Phase 2 wiring)
-- [x] Dashboard shell with API health check
-- [x] Supabase client stub + Zod env validation
-- [x] FastAPI health + mock retailer adapter + deal-score module
-- [x] Documentation set
-- [x] GitHub Actions workflows (web, api, pages, price-sync scaffold)
-- [x] Confirm clean frontend and backend builds
-
-### Phase 1 verification (local)
-
-| Check | Result |
-|-------|--------|
-| `npm run lint:web` | Pass |
-| `npm run typecheck:web` | Pass |
-| `npm run test:web` | Pass (4 tests) |
-| `npm run build:web` | Pass |
-| `uv run ruff check .` | Pass |
-| `uv run pytest` | Pass (6 tests) |
+- [x] Configure monorepo
+- [x] Design system + responsive shell
+- [x] Landing / auth shells / dashboard shell
+- [x] Env validation + Supabase client stub
+- [x] FastAPI health + mock adapter + deal-score module
+- [x] Documentation + GitHub Actions
+- [x] Clean frontend and backend builds
+- [x] Pushed to GitHub `main`
 
 ### Phase 2 — Authentication and Database
-- [ ] Migrations for all required tables
-- [ ] Auth (email/password, Google when configured, reset, verification)
-- [ ] Profiles + RLS + protected routes
-- [ ] Seed data + isolation tests
+- [x] Migrations for required tables
+- [x] Auth (email/password, Google when configured, forgot/reset)
+- [x] Profiles + auto-create trigger
+- [x] RLS policies (ownership, public catalog read, service-role writes)
+- [x] Protected routes (enforced when Supabase configured)
+- [x] Seed data (catalog, 90-day history, two demo users, builds/alerts)
+- [x] Isolation notes + smoke SQL + migration contract test
+- [ ] Live `supabase db reset` against local Docker *(requires Supabase CLI + Docker on the machine)*
 
 ### Phase 3 — Catalog and Price Data
 - [ ] Discover + product detail
-- [ ] Listings, mock ingestion, history charts, deal scoring UI
+- [ ] Listings UI, mock ingestion job, history charts, deal scoring UI
 
 ### Phase 4 — Build Lab
 - [ ] Build CRUD, totals, compatibility, share/export
 
 ### Phase 5 — Alerts and Realtime
-- [ ] Watchlists, alerts, scheduled evaluation, notifications, optional email
+- [ ] Watchlists UI, alert evaluation job, notifications, optional email
 
 ### Phase 6 — Learn and Polish
 - [ ] Markdown guides, a11y, empty/error polish, performance
@@ -68,10 +58,10 @@
 
 ## Brand assets in repo
 
-- `apps/web/src/assets/rigscout-brand.png` — full brand sheet
-- `apps/web/src/assets/rigscout-icon.png` — app icon
-- `apps/web/public/favicon.png` — favicon
-- `docs/design-mockup-dashboard.png` — approved dashboard concept
+- `apps/web/src/assets/rigscout-brand.png`
+- `apps/web/src/assets/rigscout-icon.png`
+- `apps/web/public/favicon.png`
+- `docs/design-mockup-dashboard.png`
 
 ## Palette (approved)
 
@@ -82,3 +72,10 @@
 | Navy | `#0F172A` |
 | Slate | `#64748B` |
 | Off-white | `#F8FAFC` |
+
+## Demo seed accounts (local)
+
+| Email | Password |
+|-------|----------|
+| `demo@rigscout.local` | `password123` |
+| `scout@rigscout.local` | `password123` |

@@ -1,15 +1,34 @@
 # Row Level Security
 
-RLS policies are implemented with Phase 2 migrations. Design goals:
+RLS is enabled on every public table in the Phase 2 migration.
 
-| Area | Rule |
-|------|------|
-| profiles | Users read/update only their row |
-| builds / build_items | Owner-only write; public share reads limited fields |
-| watchlists / price_alerts | Owner-only |
-| notifications | Owner-only private read |
-| products / listings / history | Public read for authenticated/anon as appropriate |
-| price_history writes | Service role / trusted backend only |
-| sync runs | Service role only |
+## Policy summary
 
-Service-role keys never ship in the frontend. Inputs are validated server-side for FastAPI routes.
+| Area | Access |
+|------|--------|
+| `profiles` | Select/update own row only |
+| Catalog (`products`, specs, retailers, listings, `price_history`, compatibility rules) | Public **read**; no insert/update/delete for anon/authenticated |
+| `builds` / `build_items` | Owner CRUD; **public builds** readable by anyone |
+| `watchlists` / `price_alerts` | Owner CRUD |
+| `notifications` | Owner select/update/delete; **inserts are service-role only** |
+| `affiliate_clicks` | Insert own (or anonymous with null user); select own |
+| `retailer_sync_runs` | No client policies → **service role only** |
+| `price_history` writes | Service role only (no client write policies) |
+
+## Auth helpers
+
+- `handle_new_user` trigger creates a `profiles` row on signup (`security definer`)
+- Frontend uses the **anon key** only; RLS still applies
+- Python jobs use **service role** for ingestion/history/notification inserts
+
+## Isolation testing
+
+1. Reset DB: `supabase db reset`
+2. Sign in as `demo@rigscout.local` and confirm you **cannot** see scout’s private build (`Isolation Test Build`)
+3. Open public share slug `demo-streaming-setup` while signed out / as another user — should be readable
+4. Confirm catalog products remain readable without auth
+5. Optional SQL notes: `supabase/tests/rls_smoke.sql`
+
+## Shared builds
+
+`builds.is_public = true` (and optional `share_slug`) exposes the build row and its items for read. The app must still select only fields intended for public share pages (Phase 4).
