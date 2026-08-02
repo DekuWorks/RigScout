@@ -2,27 +2,40 @@ name: Scheduled Price Sync
 
 on:
   schedule:
-    # Every 6 hours — refine once ingestion is production-ready
+    # Every 6 hours — calls hosted API job (same token gate as alerts)
     - cron: "0 */6 * * *"
   workflow_dispatch:
+    inputs:
+      allow_mock:
+        description: "Use mock adapter if no live retailer credentials (demo only)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/api
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-        with:
-          python-version: "3.12"
-      - run: uv sync --group dev
-      - name: Placeholder sync job
+      - name: Call sync-prices job on hosted API
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+          ALERT_JOB_TOKEN: ${{ secrets.ALERT_JOB_TOKEN }}
+          ALLOW_MOCK: ${{ github.event.inputs.allow_mock || 'false' }}
         run: |
-          echo "Phase 1: price-sync workflow scaffolded."
-          echo "Phase 3+ will invoke the ingestion CLI with service-role credentials."
-          uv run python -c "from src.adapters.mock import MockRetailerAdapter; import asyncio; print(asyncio.run(MockRetailerAdapter().fetch_listings())[0].title)"
+          if [ -z "$API_BASE_URL" ] || [ -z "$ALERT_JOB_TOKEN" ]; then
+            echo "Skipping — set repository variable API_BASE_URL and secret ALERT_JOB_TOKEN."
+            exit 0
+          fi
+          QUERY=""
+          if [ "$ALLOW_MOCK" = "true" ]; then
+            QUERY="?allow_mock=true"
+          fi
+          echo "POST ${API_BASE_URL%/}/v1/jobs/sync-prices${QUERY}"
+          curl -fsS -X POST \
+            -H "X-Job-Token: ${ALERT_JOB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "${API_BASE_URL%/}/v1/jobs/sync-prices${QUERY}"
+          echo

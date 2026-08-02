@@ -31,6 +31,18 @@ cd apps/api && uv run uvicorn src.main:app --reload --port 8000
 
 Health: [http://localhost:8000/health](http://localhost:8000/health)
 
+## Price sync (retailer ingestion)
+
+```bash
+uv run python -m src.cli sync-prices --dry-run
+uv run python -m src.cli sync-prices --allow-mock --limit=5
+# Live Best Buy / Amazon when keys are in env:
+uv run python -m src.cli sync-prices
+```
+
+Token-gated job (same `ALERT_JOB_TOKEN` as alerts): `POST /v1/jobs/sync-prices`  
+Retailer docs: [docs/RETAILER_ADAPTERS.md](../../docs/RETAILER_ADAPTERS.md)
+
 ## Production host
 
 See [docs/API_HOSTING.md](../../docs/API_HOSTING.md). Quick Docker check:

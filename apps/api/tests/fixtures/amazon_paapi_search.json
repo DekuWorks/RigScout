@@ -1,0 +1,77 @@
+{
+  "SearchResult": {
+    "Items": [
+      {
+        "ASIN": "B0BTZ2N4TX",
+        "DetailPageURL": "https://www.amazon.com/dp/B0BTZ2N4TX?tag=rigscout-20",
+        "Images": {
+          "Primary": {
+            "Large": {
+              "URL": "https://example.com/7800x3d-amz.jpg"
+            }
+          }
+        },
+        "ItemInfo": {
+          "Title": {
+            "DisplayValue": "AMD Ryzen 7 7800X3D 8-Core, 16-Thread Desktop Processor"
+          },
+          "ByLineInfo": {
+            "Brand": {
+              "DisplayValue": "AMD"
+            }
+          }
+        },
+        "Offers": {
+          "Listings": [
+            {
+              "Price": {
+                "Amount": 359.0,
+                "Currency": "USD"
+              },
+              "Availability": {
+                "Type": "Now",
+                "Message": "In Stock"
+              },
+              "Condition": {
+                "Value": "New"
+              },
+              "DeliveryInfo": {
+                "IsFreeShippingEligible": true
+              }
+            }
+          ]
+        }
+      },
+      {
+        "ASIN": "B00UNRELATED",
+        "DetailPageURL": "https://www.amazon.com/dp/B00UNRELATED",
+        "ItemInfo": {
+          "Title": {
+            "DisplayValue": "Generic HDMI Cable"
+          },
+          "ByLineInfo": {
+            "Brand": {
+              "DisplayValue": "Generic"
+            }
+          }
+        },
+        "Offers": {
+          "Listings": [
+            {
+              "Price": {
+                "Amount": 8.99,
+                "Currency": "USD"
+              },
+              "Availability": {
+                "Type": "Now"
+              },
+              "Condition": {
+                "Value": "New"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -43,11 +43,18 @@ class SupabaseRest:
         self,
         path: str,
         payload: dict[str, Any] | list[dict[str, Any]],
+        *,
+        prefer: str | None = None,
+        params: dict[str, str] | None = None,
     ) -> list[dict[str, Any]]:
+        headers = dict(self._headers)
+        if prefer:
+            headers["Prefer"] = prefer
         with httpx.Client(timeout=30.0) as client:
             response = client.post(
                 f"{self._base}/{path.lstrip('/')}",
-                headers=self._headers,
+                headers=headers,
+                params=params,
                 json=payload,
             )
         if response.status_code >= 400:
@@ -56,6 +63,21 @@ class SupabaseRest:
             return []
         data = response.json()
         return data if isinstance(data, list) else [data]
+
+    def upsert(
+        self,
+        path: str,
+        payload: dict[str, Any] | list[dict[str, Any]],
+        *,
+        on_conflict: str,
+    ) -> list[dict[str, Any]]:
+        """Insert or update on unique conflict (service-role writes)."""
+        return self.post(
+            path,
+            payload,
+            prefer="resolution=merge-duplicates,return=representation",
+            params={"on_conflict": on_conflict},
+        )
 
     def patch(
         self,

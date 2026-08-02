@@ -1,0 +1,37 @@
+{
+  "from": 1,
+  "to": 2,
+  "total": 2,
+  "currentPage": 1,
+  "totalPages": 1,
+  "products": [
+    {
+      "sku": 6537310,
+      "name": "AMD - Ryzen 7 7800X3D 8-Core - 16-Thread Desktop Processor",
+      "manufacturer": "AMD",
+      "modelNumber": "100-100000910WOF",
+      "salePrice": 349.99,
+      "regularPrice": 449.99,
+      "url": "https://www.bestbuy.com/site/amd-ryzen-7-7800x3d/6537310.p",
+      "image": "https://example.com/7800x3d.jpg",
+      "onlineAvailability": true,
+      "orderable": "Available",
+      "condition": "New",
+      "type": "HardGood"
+    },
+    {
+      "sku": 9999999,
+      "name": "Unrelated USB Cable",
+      "manufacturer": "Generic",
+      "modelNumber": "USB-C",
+      "salePrice": 9.99,
+      "regularPrice": 9.99,
+      "url": "https://www.bestbuy.com/site/cable/9999999.p",
+      "image": null,
+      "onlineAvailability": false,
+      "orderable": "SoldOut",
+      "condition": "New",
+      "type": "HardGood"
+    }
+  ]
+}

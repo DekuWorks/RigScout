@@ -8,7 +8,7 @@
 | Approved brand assets | Provided in Cursor chat — **copied into repo** |
 | Prior application code | None |
 | Supabase project | Schema now in-repo (Phase 2); remote project still optional |
-| Live retailer credentials | None |
+| Live retailer credentials | **None** (Best Buy / Amazon / Newegg keys absent in env, GitHub, Railway — names checked only) |
 
 **Remote:** https://github.com/DekuWorks/RigScout
 
@@ -44,7 +44,13 @@
 - [x] Deals page (trending, largest drops, best scores, marketplace split)
 - [x] API demo catalog + deal score wiring (`/v1/products`, `/v1/deals`)
 - [x] Live Supabase-backed catalog reads (prefer Supabase when seeded; demo fallback)
-- [ ] Official retailer API ingestion (needs credentials)
+- [x] Retailer ingestion path (adapters + sync job + token-gated endpoint + GH Action)
+  - [x] Best Buy Remix adapter — **live-ready**; needs `BEST_BUY_API_KEY` (not set yet)
+  - [x] Amazon PA-API 5 adapter (SigV4) — **live-ready**; needs Associates keys (not set yet); PA-API 5 deprecated → Creators API note in docs
+  - [x] Newegg stub — Marketplace API is seller-only; no catalog search / no scraping
+  - [x] Micro Center stub — no public API; no scraping
+  - [x] Mock path via `allow_mock` when no live keys
+  - [ ] Live production sync with real retailer credentials *(blocked on user keys)*
 
 ### Phase 4 — Build Lab
 - [x] Build CRUD with Supabase ownership and browser-local demo fallback

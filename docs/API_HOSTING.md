@@ -28,6 +28,10 @@ No live retailer integrations are required for hosting; demo catalog + Supabase-
 | `API_CORS_ORIGINS` | Yes | `https://rigscout.co,https://www.rigscout.co` |
 | `ENVIRONMENT` | Recommended | `production` |
 | `SMTP_*` | Optional | Email alerts |
+| `BEST_BUY_API_KEY` | For live Best Buy sync | [developer.bestbuy.com](https://developer.bestbuy.com/) |
+| `AMAZON_PAAPI_ACCESS_KEY` | For live Amazon sync | Associates PA-API |
+| `AMAZON_PAAPI_SECRET_KEY` | For live Amazon sync | With access key |
+| `AMAZON_PAAPI_PARTNER_TAG` | For live Amazon sync | Associates tag |
 
 5. Confirm health: `curl -sS https://<your-api-host>/health`
 6. Wire GitHub (repository **Settings → Secrets and variables → Actions**):
@@ -39,6 +43,7 @@ No live retailer integrations are required for hosting; demo catalog + Supabase-
 | Variable | `VITE_API_BASE_URL` | Same URL (so the Pages build talks to production API) |
 
 7. Run **Evaluate price alerts** manually (**Actions → Evaluate price alerts → Run workflow**) and confirm HTTP 200.
+8. After retailer keys are set, run **Scheduled Price Sync** (or `POST /v1/jobs/sync-prices` with `X-Job-Token`). Without keys the job returns `status=skipped` — that is expected.
 
 Local smoke (before hosting):
 

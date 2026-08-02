@@ -37,7 +37,12 @@ Validated at startup in `apps/web/src/lib/env.ts` (Zod). Google OAuth is configu
 | `API_CORS_ORIGINS` | Recommended | Comma-separated origins (include Vite + site) |
 | `API_RATE_LIMIT_PER_MINUTE` | Optional | Default 60 |
 | `SMTP_*` | Optional | Email alerts |
-| `ALERT_JOB_TOKEN` | For jobs | Protects `POST /v1/jobs/evaluate-alerts` |
+| `ALERT_JOB_TOKEN` | For jobs | Protects `POST /v1/jobs/*` (alerts + price sync) |
+| `BEST_BUY_API_KEY` | For live Best Buy sync | [Developer portal](https://developer.bestbuy.com/) |
+| `AMAZON_PAAPI_ACCESS_KEY` | For live Amazon sync | Associates + PA-API / Creators access |
+| `AMAZON_PAAPI_SECRET_KEY` | For live Amazon sync | With access key + partner tag |
+| `AMAZON_PAAPI_PARTNER_TAG` | For live Amazon sync | e.g. `yoursite-20` |
+| `NEWEGG_API_KEY` / `NEWEGG_SELLER_ID` | Unused for catalog | Seller Marketplace only — stub |
 
 ---
 
@@ -65,6 +70,8 @@ Validated at startup in `apps/web/src/lib/env.ts` (Zod). Google OAuth is configu
 ### Hosted API (Railway etc.)
 
 See [API_HOSTING.md](./API_HOSTING.md). Minimum: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ALERT_JOB_TOKEN`, `API_CORS_ORIGINS=https://rigscout.co,https://www.rigscout.co`, `ENVIRONMENT=production`.
+
+For live retailer ingestion (optional until keys exist): `BEST_BUY_API_KEY` and/or `AMAZON_PAAPI_*` — see [RETAILER_ADAPTERS.md](./RETAILER_ADAPTERS.md).
 
 ---
 
