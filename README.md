@@ -82,6 +82,7 @@ cd apps/api && uv run ruff check . && uv run pytest
 | [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) | Env vars & secrets |
 | [docs/SUPABASE.md](docs/SUPABASE.md) | Local Supabase + Python interplay |
 | [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md) | Pages deployment |
+| [docs/ALERTS.md](docs/ALERTS.md) | Watchlists, alerts, notification job |
 | [docs/DEAL_SCORE.md](docs/DEAL_SCORE.md) | Deal score formula |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Common issues |
 | [apps/api/README.md](apps/api/README.md) | Python backend |

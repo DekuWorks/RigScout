@@ -14,6 +14,8 @@ import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 import { SignupPage } from "@/pages/auth/SignupPage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { SettingsPage } from "@/pages/SettingsPage";
+import { SharedBuildPage } from "@/pages/SharedBuildPage";
+import { WatchlistPage } from "@/pages/WatchlistPage";
 
 export default function App() {
   return (
@@ -32,16 +34,7 @@ export default function App() {
           <Route path="builds" element={<BuildsPage />} />
           <Route path="builds/:buildId" element={<BuildDetailPage />} />
           <Route path="deals" element={<DealsPage />} />
-          <Route
-            path="watchlist"
-            element={
-              <PlaceholderPage
-                title="Watchlist & Alerts"
-                description="Target prices, channels, and realtime notifications arrive in Phase 5."
-                phase="Phase 5"
-              />
-            }
-          />
+          <Route path="watchlist" element={<WatchlistPage />} />
           <Route
             path="learn"
             element={
@@ -56,17 +49,7 @@ export default function App() {
         </Route>
       </Route>
 
-      {/* Public shared builds (Phase 4 will expand); keep route reserved */}
-      <Route
-        path="/share/:slug"
-        element={
-          <PlaceholderPage
-            title="Shared build"
-            description="Read-only public build links are completed in Phase 4."
-            phase="Phase 4"
-          />
-        }
-      />
+      <Route path="/share/:slug" element={<SharedBuildPage />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

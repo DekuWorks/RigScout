@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatMoney, PART_CATEGORY_LABELS, type PartCategory } from "@rigscout/shared";
-import { Bell, ExternalLink, Wrench } from "lucide-react";
+import { Bell, ExternalLink, Wrench, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { DealScoreBadge } from "@/components/catalog/DealScoreBadge";
 import { PriceHistoryChart } from "@/components/catalog/PriceHistoryChart";
@@ -8,17 +8,73 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { PriceChange } from "@/components/ui/PriceChange";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useAuth } from "@/features/auth/useAuth";
+import { createAlert } from "@/lib/alerts";
 import { fetchProduct } from "@/lib/catalog-api";
+import { addToWatchlist } from "@/lib/watchlists";
 import { useState } from "react";
 
 export function ProductDetailPage() {
   const { slug = "" } = useParams();
+  const { user, profile, supabaseConfigured } = useAuth();
+  const ownerId = user?.id ?? "guest";
+  const useRemote = supabaseConfigured && Boolean(user);
+  const queryClient = useQueryClient();
   const [range, setRange] = useState<30 | 90 | 365>(90);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [targetDollars, setTargetDollars] = useState("");
+  const [percentDrop, setPercentDrop] = useState("");
+  const [channelInApp, setChannelInApp] = useState(true);
+  const [channelEmail, setChannelEmail] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertError, setAlertError] = useState<string | null>(null);
 
   const query = useQuery({
     queryKey: ["product", slug, range],
     queryFn: () => fetchProduct(slug, range),
     enabled: Boolean(slug),
+  });
+
+  const saveAlert = useMutation({
+    mutationFn: async () => {
+      const product = query.data?.product;
+      if (!product) throw new Error("Product not loaded.");
+      const target =
+        targetDollars.trim() === "" ? null : Math.round(Number(targetDollars) * 100);
+      const percent = percentDrop.trim() === "" ? null : Number(percentDrop);
+      if ((target == null || Number.isNaN(target)) && (percent == null || Number.isNaN(percent))) {
+        throw new Error("Enter a target price and/or percent drop.");
+      }
+      const watch = await addToWatchlist(
+        ownerId,
+        product,
+        useRemote,
+        profile?.plan_tier ?? "free",
+      );
+      await createAlert(
+        ownerId,
+        {
+          product_id: product.id,
+          watchlist_id: watch.id,
+          target_price_minor: target != null && !Number.isNaN(target) ? target : null,
+          percent_drop: percent != null && !Number.isNaN(percent) ? percent : null,
+          channel_in_app: channelInApp,
+          channel_email: channelEmail,
+        },
+        useRemote,
+      );
+    },
+    onSuccess: async () => {
+      setAlertMessage("Alert saved. You’ll be notified when the rule matches.");
+      setAlertError(null);
+      setAlertOpen(false);
+      await queryClient.invalidateQueries({ queryKey: ["watchlists", ownerId, useRemote] });
+      await queryClient.invalidateQueries({ queryKey: ["alerts", ownerId, useRemote] });
+    },
+    onError: (err: unknown) => {
+      setAlertError(err instanceof Error ? err.message : "Could not save alert");
+      setAlertMessage(null);
+    },
   });
 
   if (query.isLoading) {
@@ -72,11 +128,20 @@ export function ProductDetailPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <button type="button" className="rs-btn-primary" disabled title="Phase 4 — Build Lab">
+        <Link to="/app/builds" className="rs-btn-primary">
           <Wrench className="h-4 w-4" aria-hidden />
           Add to build
-        </button>
-        <button type="button" className="rs-btn-secondary" disabled title="Phase 5 — Alerts">
+        </Link>
+        <button
+          type="button"
+          className="rs-btn-secondary"
+          onClick={() => {
+            setAlertOpen(true);
+            setTargetDollars((product.best_price_minor / 100).toFixed(2));
+            setAlertMessage(null);
+            setAlertError(null);
+          }}
+        >
           <Bell className="h-4 w-4" aria-hidden />
           Set price alert
         </button>
@@ -84,6 +149,86 @@ export function ProductDetailPage() {
           Back to Discover
         </Link>
       </div>
+      {alertMessage ? <p className="text-sm text-rs-success">{alertMessage}</p> : null}
+
+      {alertOpen ? (
+        <div className="rs-card space-y-4 p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="font-display text-lg font-semibold">Set price alert</h2>
+              <p className="text-sm text-[var(--muted)]">
+                Adds this part to your watchlist and creates a notification rule.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="rounded-lg p-1 text-[var(--muted)] hover:bg-white/5"
+              aria-label="Close"
+              onClick={() => setAlertOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="block text-sm">
+              <span className="text-[var(--muted)]">Target price (USD)</span>
+              <input
+                className="rs-input mt-1"
+                type="number"
+                min="0"
+                step="0.01"
+                value={targetDollars}
+                onChange={(e) => setTargetDollars(e.target.value)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-[var(--muted)]">Or % drop from recent high</span>
+              <input
+                className="rs-input mt-1"
+                type="number"
+                min="1"
+                max="90"
+                step="1"
+                placeholder="e.g. 10"
+                value={percentDrop}
+                onChange={(e) => setPercentDrop(e.target.value)}
+              />
+            </label>
+          </div>
+          <div className="flex flex-wrap gap-4 text-sm">
+            <label className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={channelInApp}
+                onChange={(e) => setChannelInApp(e.target.checked)}
+              />
+              In-app
+            </label>
+            <label className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={channelEmail}
+                onChange={(e) => setChannelEmail(e.target.checked)}
+              />
+              Email (when SMTP configured)
+            </label>
+          </div>
+          {alertError ? <p className="text-sm text-rs-danger">{alertError}</p> : null}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="rs-btn-primary"
+              disabled={saveAlert.isPending}
+              onClick={() => saveAlert.mutate()}
+            >
+              Save alert
+            </button>
+            <Link to="/app/watchlist" className="rs-btn-secondary">
+              Open watchlist
+            </Link>
+          </div>
+        </div>
+      ) : null}
 
       <section className="rs-card p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

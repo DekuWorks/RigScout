@@ -29,7 +29,10 @@ class Settings(BaseSettings):
     smtp_port: int = 587
     smtp_user: str = ""
     smtp_password: str = ""
-    smtp_from: str = "alerts@rigscout.local"
+    smtp_from: str = "alerts@rigscout.co"
+
+    # Shared secret for POST /v1/jobs/* — leave blank to disable job routes
+    alert_job_token: str = ""
 
     @property
     def cors_origins(self) -> list[str]:
@@ -42,6 +45,10 @@ class Settings(BaseSettings):
     @property
     def email_configured(self) -> bool:
         return bool(self.smtp_host and self.smtp_user and self.smtp_password)
+
+    @property
+    def jobs_enabled(self) -> bool:
+        return bool(self.alert_job_token)
 
 
 @lru_cache

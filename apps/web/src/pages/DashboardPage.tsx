@@ -9,20 +9,16 @@ import { fetchDeals } from "@/lib/catalog-api";
 import { PriceChange } from "@/components/ui/PriceChange";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/features/auth/useAuth";
+import { listAlerts } from "@/lib/alerts";
 import { buildTotals, missingBuildCategories } from "@/lib/build-calculations";
 import { listBuilds } from "@/lib/builds";
+import { listWatchlists } from "@/lib/watchlists";
 
 type HealthResponse = {
   status: string;
   service: string;
   version: string;
 };
-
-const baseStats = [
-  { label: "Saved this month", value: "$1,247", icon: PiggyBank, delta: -124700 },
-  { label: "Price alerts", value: "14", icon: Bell },
-  { label: "Deals found", value: "28", icon: Tag },
-];
 
 const heroModules = import.meta.glob<{ default: string }>("../assets/pc-hero.png", {
   eager: true,
@@ -48,10 +44,28 @@ export function DashboardPage() {
     queryKey: ["builds", ownerId, useRemote],
     queryFn: () => listBuilds(ownerId, useRemote),
   });
+  const alerts = useQuery({
+    queryKey: ["alerts", ownerId, useRemote],
+    queryFn: () => listAlerts(ownerId, useRemote),
+  });
+  const watchlists = useQuery({
+    queryKey: ["watchlists", ownerId, useRemote],
+    queryFn: () => listWatchlists(ownerId, useRemote),
+  });
 
   const topDeal = deals.data?.best_deal_scores[0];
+  const activeAlerts = (alerts.data ?? []).filter((alert) => alert.is_active).length;
+  const dealsFound = deals.data
+    ? deals.data.best_deal_scores.length + deals.data.largest_drops.length
+    : 0;
   const stats = [
-    ...baseStats,
+    {
+      label: "Watched parts",
+      value: String(watchlists.data?.length ?? 0),
+      icon: PiggyBank,
+    },
+    { label: "Price alerts", value: String(activeAlerts), icon: Bell },
+    { label: "Deals found", value: String(dealsFound), icon: Tag },
     { label: "Builds", value: String(builds.data?.length ?? 0), icon: Layers },
   ];
 
@@ -120,7 +134,11 @@ export function DashboardPage() {
               <stat.icon className="h-4 w-4 text-rs-accent" aria-hidden />
             </div>
             <p className="mt-2 font-display text-2xl font-bold">{stat.value}</p>
-            {stat.delta != null ? <PriceChange className="mt-2" deltaMinor={stat.delta} percent={23} /> : null}
+            {stat.label === "Price alerts" ? (
+              <Link to="/app/watchlist" className="mt-2 inline-block text-xs text-rs-accent hover:underline">
+                Manage alerts
+              </Link>
+            ) : null}
           </motion.div>
         ))}
       </section>

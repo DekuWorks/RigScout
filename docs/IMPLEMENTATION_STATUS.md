@@ -52,17 +52,23 @@
 - [x] Compatibility guidance API (socket, RAM, fit, clearance, cooling, PSU headroom)
 - [x] JSON/CSV exports and share-slug/link wiring
 - [x] Dashboard Build Lab summary and PC hero asset (`pc-hero.png`)
-- [ ] Public read-only shared build view *(link/slug is wired; view remains a stub)*
-- [ ] Higgsfield-native PC regen *(connector session expired; interim hero asset installed)*
+- [x] Public read-only shared build view (`/share/:slug`) + unshare
+- [ ] Higgsfield-native PC regen *(optional polish; cutout hero asset live)*
 
 ### Phase 5 — Alerts and Realtime
-- [ ] Watchlists UI, alert evaluation job, notifications, optional email
+- [x] Watchlists UI + product alert dialog (Supabase + localStorage guest fallback)
+- [x] Notification inbox + Realtime subscription
+- [x] Alert evaluation job (`POST /v1/jobs/evaluate-alerts`) + optional SMTP
+- [x] Hourly GitHub Action workflow (enabled when secrets set)
+- [x] Docs: [ALERTS.md](./ALERTS.md)
 
 ### Phase 6 — Learn and Polish
 - [ ] Markdown guides, a11y, empty/error polish, performance
 
 ### Phase 7 — Deployment
-- [ ] Finalize Actions/Pages, secrets validation, full test matrix
+- [x] Custom domain `rigscout.co` + Pages CNAME / HTTPS
+- [ ] Finalize secrets validation, full test matrix, hosted API for alert job
+
 
 ---
 

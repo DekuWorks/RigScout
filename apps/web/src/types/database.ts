@@ -30,3 +30,64 @@ export type ProfileUpdate = Partial<
     | "privacy_share_builds"
   >
 >;
+
+export type WatchlistEntry = {
+  id: string;
+  user_id: string;
+  product_id: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  product?: {
+    id: string;
+    slug: string;
+    name: string;
+    brand: string;
+    category: string;
+  } | null;
+  alerts?: PriceAlert[];
+};
+
+export type PriceAlert = {
+  id: string;
+  user_id: string;
+  product_id: string;
+  watchlist_id: string | null;
+  target_price_minor: number | null;
+  percent_drop: number | null;
+  channel_in_app: boolean;
+  channel_email: boolean;
+  is_active: boolean;
+  last_triggered_at: string | null;
+  last_triggered_price_minor: number | null;
+  created_at: string;
+  updated_at: string;
+  product?: {
+    id: string;
+    slug: string;
+    name: string;
+    brand: string;
+    category: string;
+  } | null;
+};
+
+export type AlertInput = {
+  product_id: string;
+  watchlist_id?: string | null;
+  target_price_minor?: number | null;
+  percent_drop?: number | null;
+  channel_in_app?: boolean;
+  channel_email?: boolean;
+};
+
+export type AppNotification = {
+  id: string;
+  user_id: string;
+  alert_id: string | null;
+  product_id: string | null;
+  title: string;
+  body: string;
+  event_key: string;
+  read_at: string | null;
+  created_at: string;
+};

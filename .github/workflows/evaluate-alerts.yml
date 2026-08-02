@@ -1,0 +1,25 @@
+name: Evaluate price alerts
+
+on:
+  schedule:
+    # Hourly — requires ALERT_JOB_TOKEN + API_BASE_URL secrets/vars
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call evaluate-alerts job
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+          ALERT_JOB_TOKEN: ${{ secrets.ALERT_JOB_TOKEN }}
+        run: |
+          if [ -z "$API_BASE_URL" ] || [ -z "$ALERT_JOB_TOKEN" ]; then
+            echo "Skipping — set repository variable API_BASE_URL and secret ALERT_JOB_TOKEN."
+            exit 0
+          fi
+          curl -fsS -X POST \
+            -H "X-Job-Token: ${ALERT_JOB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "${API_BASE_URL%/}/v1/jobs/evaluate-alerts"

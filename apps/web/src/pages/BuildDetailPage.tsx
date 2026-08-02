@@ -113,8 +113,13 @@ export function BuildDetailPage() {
           <Link to="/app/builds" className="inline-flex items-center gap-2 text-sm text-[var(--muted)] hover:text-rs-accent">
             <ArrowLeft className="h-4 w-4" /> All builds
           </Link>
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-3 flex flex-wrap items-center gap-3">
             <h1 className="font-display text-3xl font-bold">{build.name}</h1>
+            {build.is_public ? (
+              <span className="rounded-full border border-rs-accent/40 bg-rs-accent/10 px-2.5 py-0.5 text-xs font-medium text-rs-accent">
+                Public
+              </span>
+            ) : null}
             <button
               className="text-xs text-rs-accent hover:underline"
               onClick={() => {
@@ -152,6 +157,22 @@ export function BuildDetailPage() {
           >
             <Link2 className="h-4 w-4" /> Copy share link
           </button>
+          {build.is_public ? (
+            <button
+              className="rs-btn-secondary"
+              onClick={async () => {
+                await updateBuild(
+                  ownerId,
+                  build.id,
+                  { is_public: false, share_slug: null },
+                  useRemote,
+                );
+                void refresh();
+              }}
+            >
+              Unshare
+            </button>
+          ) : null}
         </div>
       </header>
 

@@ -152,6 +152,34 @@ export async function getBuild(
   return builds.find((build) => build.id === buildId) ?? null;
 }
 
+/** Public read for shared links — anon Supabase or guest localStorage scan. */
+export async function getPublicBuildBySlug(slug: string): Promise<Build | null> {
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("builds")
+      .select(BUILD_SELECT)
+      .eq("share_slug", slug)
+      .eq("is_public", true)
+      .maybeSingle();
+    if (error) throw error;
+    return data ? parseRemoteBuild(data) : null;
+  }
+
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i);
+      if (!key?.startsWith(STORAGE_PREFIX)) continue;
+      const builds = JSON.parse(localStorage.getItem(key) ?? "[]") as Build[];
+      const match = builds.find((build) => build.is_public && build.share_slug === slug);
+      if (match) return match;
+    }
+  } catch {
+    /* ignore corrupt local storage */
+  }
+  return null;
+}
+
 export async function createBuild(
   ownerId: string,
   name: string,

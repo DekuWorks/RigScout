@@ -1,7 +1,8 @@
-import { Bell, LogOut, Moon, Search, Sun } from "lucide-react";
+import { LogOut, Moon, Search, Sun } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/brand/Logo";
+import { NotificationInbox } from "@/components/notifications/NotificationInbox";
 import { useAuth } from "@/features/auth/useAuth";
 import { useThemeStore } from "@/stores/theme";
 
@@ -51,14 +52,7 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">
-        <button
-          type="button"
-          className="relative rounded-xl p-2 text-[var(--muted)] transition hover:bg-white/5 hover:text-[var(--fg)]"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rs-primary" />
-        </button>
+        <NotificationInbox />
 
         <button
           type="button"

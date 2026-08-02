@@ -144,7 +144,7 @@ export function SettingsPage() {
                 onChange={(e) => setNotifyEmail(e.target.checked)}
                 disabled={!user}
               />
-              Email alerts (delivery in Phase 5)
+              Email alerts (sent when SMTP is configured on the API)
             </label>
           </fieldset>
 
