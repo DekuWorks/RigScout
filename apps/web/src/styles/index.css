@@ -70,6 +70,21 @@
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-rs-accent;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {
@@ -115,5 +130,13 @@
 
   .price-up {
     @apply text-rs-danger;
+  }
+
+  .rs-skip-link {
+    @apply absolute left-4 top-4 z-[100] -translate-y-16 rounded-xl bg-rs-primary px-4 py-2 text-sm font-semibold text-white shadow-lg transition focus:translate-y-0 focus-visible:translate-y-0;
+  }
+
+  .rs-md-code {
+    @apply rounded-md border border-[var(--card-border)] bg-white/5 px-1.5 py-0.5 font-mono text-[0.85em] text-rs-accent;
   }
 }

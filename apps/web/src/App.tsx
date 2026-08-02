@@ -1,5 +1,7 @@
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { DealsPage } from "@/pages/DealsPage";
@@ -7,15 +9,29 @@ import { DiscoverPage } from "@/pages/DiscoverPage";
 import { BuildDetailPage } from "@/pages/BuildDetailPage";
 import { BuildsPage } from "@/pages/BuildsPage";
 import { LandingPage } from "@/pages/LandingPage";
+import { LearnPage } from "@/pages/LearnPage";
 import { ProductDetailPage } from "@/pages/ProductDetailPage";
 import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 import { SignupPage } from "@/pages/auth/SignupPage";
-import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { SharedBuildPage } from "@/pages/SharedBuildPage";
 import { WatchlistPage } from "@/pages/WatchlistPage";
+
+const LearnGuidePage = lazy(() =>
+  import("@/pages/LearnGuidePage").then((mod) => ({ default: mod.LearnGuidePage })),
+);
+
+function LearnGuideFallback() {
+  return (
+    <div className="mx-auto max-w-3xl space-y-4" aria-busy="true" aria-label="Loading guide">
+      <Skeleton className="h-4 w-32" />
+      <Skeleton className="h-10 w-3/4" />
+      <Skeleton className="h-40 w-full" />
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -35,14 +51,13 @@ export default function App() {
           <Route path="builds/:buildId" element={<BuildDetailPage />} />
           <Route path="deals" element={<DealsPage />} />
           <Route path="watchlist" element={<WatchlistPage />} />
+          <Route path="learn" element={<LearnPage />} />
           <Route
-            path="learn"
+            path="learn/:slug"
             element={
-              <PlaceholderPage
-                title="Learn"
-                description="Beginner guides in Markdown arrive in Phase 6."
-                phase="Phase 6"
-              />
+              <Suspense fallback={<LearnGuideFallback />}>
+                <LearnGuidePage />
+              </Suspense>
             }
           />
           <Route path="settings" element={<SettingsPage />} />

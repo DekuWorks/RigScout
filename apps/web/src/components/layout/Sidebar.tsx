@@ -5,7 +5,10 @@ import { desktopNav } from "./nav";
 
 export function Sidebar() {
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-[var(--card-border)] bg-[var(--card)]/40 px-4 py-5 lg:flex">
+    <aside
+      aria-label="Application"
+      className="hidden w-64 shrink-0 flex-col border-r border-[var(--card-border)] bg-[var(--card)]/40 px-4 py-5 lg:flex"
+    >
       <div className="mb-8 px-2">
         <Logo />
         <p className="mt-2 text-xs text-[var(--muted)]">{BRAND.tagline}</p>

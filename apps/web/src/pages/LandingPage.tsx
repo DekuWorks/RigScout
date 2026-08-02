@@ -21,9 +21,15 @@ const fadeUp = {
 export function LandingPage() {
   return (
     <div className="min-h-dvh">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 lg:px-6">
+      <a href="#main-content" className="rs-skip-link">
+        Skip to main content
+      </a>
+      <header
+        role="banner"
+        className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 lg:px-6"
+      >
         <Logo to="/" />
-        <nav className="hidden items-center gap-6 text-sm text-[var(--muted)] md:flex">
+        <nav aria-label="Marketing" className="hidden items-center gap-6 text-sm text-[var(--muted)] md:flex">
           <a href="#how" className="hover:text-[var(--fg)]">
             How it works
           </a>
@@ -45,6 +51,7 @@ export function LandingPage() {
         </Link>
       </header>
 
+      <main id="main-content" tabIndex={-1} className="outline-none">
       <section className="relative mx-auto max-w-6xl px-4 pb-16 pt-8 lg:px-6 lg:pb-24 lg:pt-14">
         <div className="grid items-center gap-10 md:grid-cols-[1.05fr_0.95fr] lg:gap-8">
           <motion.div {...fadeUp} transition={{ duration: 0.45 }} className="relative z-10">
@@ -225,6 +232,7 @@ export function LandingPage() {
           ))}
         </dl>
       </section>
+      </main>
 
       <footer className="border-t border-[var(--card-border)] py-10">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between lg:px-6">

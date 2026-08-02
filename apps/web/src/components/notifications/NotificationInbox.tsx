@@ -76,20 +76,31 @@ export function NotificationInbox() {
       <button
         type="button"
         className="relative rounded-xl p-2 text-[var(--muted)] transition hover:bg-white/5 hover:text-[var(--fg)]"
-        aria-label="Notifications"
+        aria-label={
+          unread > 0 ? `Notifications, ${unread} unread` : "Notifications, none unread"
+        }
         aria-expanded={open}
+        aria-haspopup="dialog"
+        aria-controls="notification-panel"
         onClick={() => setOpen((value) => !value)}
       >
-        <Bell className="h-5 w-5" />
+        <Bell className="h-5 w-5" aria-hidden />
         {unread > 0 ? (
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rs-primary" />
+          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rs-primary" aria-hidden />
         ) : null}
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl sm:w-96">
+        <div
+          id="notification-panel"
+          role="dialog"
+          aria-label="Notifications"
+          className="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl sm:w-96"
+        >
           <div className="flex items-center justify-between border-b border-[var(--card-border)] px-3 py-2">
-            <p className="text-sm font-semibold">Notifications</p>
+            <p className="text-sm font-semibold" id="notification-panel-title">
+              Notifications
+            </p>
             {unread > 0 ? (
               <button
                 type="button"

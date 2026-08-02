@@ -4,14 +4,16 @@ import { motion } from "framer-motion";
 import { Bell, Layers, PiggyBank, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DealScoreBadge } from "@/components/catalog/DealScoreBadge";
-import { apiFetch } from "@/lib/api";
-import { fetchDeals } from "@/lib/catalog-api";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { PriceChange } from "@/components/ui/PriceChange";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/features/auth/useAuth";
+import { apiFetch } from "@/lib/api";
 import { listAlerts } from "@/lib/alerts";
 import { buildTotals, missingBuildCategories } from "@/lib/build-calculations";
 import { listBuilds } from "@/lib/builds";
+import { fetchDeals } from "@/lib/catalog-api";
 import { listWatchlists } from "@/lib/watchlists";
 
 type HealthResponse = {
@@ -152,6 +154,14 @@ export function DashboardPage() {
             </Link>
           </div>
           {builds.isLoading ? <Skeleton className="mt-4 h-28 w-full" /> : null}
+          {builds.isError ? (
+            <div className="mt-4">
+              <ErrorState
+                message="Builds could not be loaded."
+                onRetry={() => void builds.refetch()}
+              />
+            </div>
+          ) : null}
           {builds.data?.length ? (
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               {builds.data.slice(0, 3).map((build) => {
@@ -176,9 +186,17 @@ export function DashboardPage() {
                 );
               })}
             </div>
-          ) : !builds.isLoading ? (
-            <div className="mt-4 rounded-xl border border-dashed border-[var(--card-border)] p-5 text-sm text-[var(--muted)]">
-              No builds yet. <Link className="text-rs-accent hover:underline" to="/app/builds">Create one in Build Lab.</Link>
+          ) : !builds.isLoading && !builds.isError ? (
+            <div className="mt-4">
+              <EmptyState
+                title="No builds yet"
+                description="Create a build in Build Lab to track parts, totals, and compatibility."
+                action={
+                  <Link className="rs-btn-primary" to="/app/builds">
+                    Open Build Lab
+                  </Link>
+                }
+              />
             </div>
           ) : null}
         </div>
@@ -186,6 +204,14 @@ export function DashboardPage() {
         <div className="rs-card p-5">
           <h2 className="font-display text-lg font-semibold">Top deal right now</h2>
           {deals.isLoading ? <Skeleton className="mt-4 h-24 w-full" /> : null}
+          {deals.isError ? (
+            <div className="mt-4">
+              <ErrorState
+                message="Deals could not be loaded. Local demo still works when the API is offline."
+                onRetry={() => void deals.refetch()}
+              />
+            </div>
+          ) : null}
           {topDeal ? (
             <>
               <p className="mt-4 font-medium">{topDeal.name}</p>
@@ -201,11 +227,19 @@ export function DashboardPage() {
                 View Deal
               </Link>
             </>
-          ) : (
-            <p className="mt-4 text-sm text-[var(--muted)]">
-              Start the API to load live mock deals.
-            </p>
-          )}
+          ) : !deals.isLoading && !deals.isError ? (
+            <div className="mt-4">
+              <EmptyState
+                title="No deals loaded"
+                description="Start the API to load mock deals, or browse Discover meanwhile."
+                action={
+                  <Link to="/app/discover" className="rs-btn-secondary">
+                    Browse Discover
+                  </Link>
+                }
+              />
+            </div>
+          ) : null}
         </div>
       </section>
     </div>

@@ -24,13 +24,16 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[var(--card-border)] bg-[var(--bg)]/80 px-4 backdrop-blur-md lg:px-6">
+    <header
+      role="banner"
+      className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[var(--card-border)] bg-[var(--bg)]/80 px-4 backdrop-blur-md lg:px-6"
+    >
       <div className="lg:hidden">
         <Logo variant="icon" to="/app" />
       </div>
 
       <div className="mx-auto flex w-full max-w-xl flex-1 items-center">
-        <form className="relative w-full" onSubmit={onSearch}>
+        <form className="relative w-full" role="search" onSubmit={onSearch}>
           <label className="relative block w-full">
             <span className="sr-only">Search parts, builds, or brands</span>
             <Search
@@ -43,6 +46,7 @@ export function Header() {
               className="rs-input pl-10 pr-16"
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              aria-label="Search parts, builds, or brands"
             />
             <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-[var(--card-border)] px-1.5 py-0.5 text-[10px] text-[var(--muted)] sm:inline">
               ⌘ K
@@ -67,6 +71,7 @@ export function Header() {
           <div className="ml-1 hidden items-center gap-2 sm:flex">
             <Link
               to="/app/settings"
+              aria-label={`Account settings for ${displayName}`}
               className="flex items-center gap-2 rounded-xl border border-[var(--card-border)] px-2 py-1.5 transition hover:border-rs-primary/40"
             >
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-rs-primary/20 text-xs font-bold text-rs-accent">

@@ -63,10 +63,15 @@
 - [x] Docs: [ALERTS.md](./ALERTS.md)
 
 ### Phase 6 — Learn and Polish
-- [ ] Markdown guides, a11y, empty/error polish, performance
+- [x] Beginner Learn guides (structured TS + Markdown bodies under `apps/web/src/content/learn/`)
+- [x] Learn index + article detail routes (`/app/learn`, `/app/learn/:slug`) with lazy-loaded guide page
+- [x] Accessibility polish (skip links, landmarks, focus styles, reduced motion, nav/control labels)
+- [x] Loading / empty / error state reuse on Learn + Dashboard gaps
+- [x] Lightweight Markdown renderer (no CMS; no heavy markdown dependency)
 
 ### Phase 7 — Deployment
-- [x] Custom domain `rigscout.co` + Pages CNAME / HTTPS
+- [x] Custom domain `rigscout.co` + Pages CNAME / HTTPS (apex)
+- [ ] Finish www dual-host Let’s Encrypt cert (`www` must not serve `*.github.io`) — see [GITHUB_PAGES.md](./GITHUB_PAGES.md)
 - [ ] Finalize secrets validation, full test matrix, hosted API for alert job
 
 
