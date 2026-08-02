@@ -105,7 +105,8 @@ export function LoginPage() {
           Continue with Google
         </button>
         <p className="mt-2 text-center text-[11px] text-[var(--muted)]">
-          Google sign-in works when the provider is enabled in the Supabase dashboard.
+          Google SSO uses Supabase Auth. If redirect fails, confirm the callback URL is listed in
+          Google Cloud OAuth credentials.
         </p>
 
         <p className="mt-4 text-center text-sm text-[var(--muted)]">

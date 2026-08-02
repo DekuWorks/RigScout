@@ -1,11 +1,26 @@
-# Supabase local development
+# Supabase
 
-## Prerequisites
+## Production
+
+| Item | Value |
+|------|--------|
+| Project | RigScout (`tygapixcdiovpdgfqros`) |
+| URL | `https://tygapixcdiovpdgfqros.supabase.co` |
+| Dashboard | https://supabase.com/dashboard/project/tygapixcdiovpdgfqros |
+| Site URL | `https://rigscout.co` |
+
+GitHub Actions secrets power the Pages build: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (plus service-role secrets for jobs).
+
+Google SSO: see [AUTH_GOOGLE.md](./AUTH_GOOGLE.md).
+
+## Local development
+
+### Prerequisites
 
 - [Supabase CLI](https://supabase.com/docs/guides/cli)
 - Docker (for local stack)
 
-## Commands
+### Commands
 
 ```bash
 # from repo root
