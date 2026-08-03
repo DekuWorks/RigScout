@@ -35,9 +35,6 @@ export function ProductCard({ product }: ProductCardProps) {
           {formatMoney(product.best_price_minor, product.currency)}
         </p>
         <PriceChange className="mt-1" deltaMinor={product.price_delta_minor} />
-        {product.is_mock ? (
-          <p className="mt-2 text-[10px] uppercase tracking-wide text-[var(--muted)]">MOCK data</p>
-        ) : null}
       </div>
     </Link>
   );

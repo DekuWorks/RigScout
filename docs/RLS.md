@@ -23,11 +23,12 @@ RLS is enabled on every public table in the Phase 2 migration.
 
 ## Isolation testing
 
-1. Reset DB: `supabase db reset`
-2. Sign in as `demo@rigscout.local` and confirm you **cannot** see scout’s private build (`Isolation Test Build`)
-3. Open public share slug `demo-streaming-setup` while signed out / as another user — should be readable
-4. Confirm catalog products remain readable without auth
-5. Optional SQL notes: `supabase/tests/rls_smoke.sql`
+1. Reset DB: `supabase db reset` (production-safe seed — empty catalog)
+2. Optionally load local demo users/builds: `psql … -f supabase/seed_demo.sql`
+3. Sign in as `demo@rigscout.local` and confirm you **cannot** see scout’s private build (`Isolation Test Build`)
+4. Open public share slug `demo-streaming-setup` while signed out / as another user — should be readable
+5. Confirm catalog products remain readable without auth when present (empty catalog is also valid)
+6. Optional SQL notes: `supabase/tests/rls_smoke.sql`
 
 ## Shared builds
 

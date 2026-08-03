@@ -1,6 +1,7 @@
-"""In-memory MOCK catalog for local/demo use when Supabase is empty or offline.
+"""In-memory fixture catalog for unit tests only.
 
-Clearly labeled placeholder data — replace with live ingestion + Supabase reads later.
+Not served by production catalog endpoints. ``catalog_store`` returns an empty
+catalog when Supabase has no products — it does not fall back here.
 """
 
 from __future__ import annotations

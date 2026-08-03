@@ -1,0 +1,16 @@
+{
+  "listings": [
+    {
+      "external_listing_id": "654321",
+      "product_url": "https://www.microcenter.com/product/654321/amd-ryzen-7-7800x3d",
+      "title": "AMD Ryzen 7 7800X3D",
+      "price": 329.99,
+      "currency": "USD",
+      "brand": "AMD",
+      "category": "cpu",
+      "condition": "new",
+      "availability": "in_stock",
+      "product_slug": "amd-ryzen-7-7800x3d"
+    }
+  ]
+}

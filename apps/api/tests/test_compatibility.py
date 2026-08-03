@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from src.core.compatibility import CompatibilityItem, evaluate_compatibility
 from src.main import app
+from src.services.demo_catalog import list_products as list_fixture_products
 
 client = TestClient(app)
 
@@ -12,7 +13,13 @@ def _codes(result: dict[str, object]) -> set[str]:
     return {str(message["code"]) for message in messages}
 
 
-def test_compatible_demo_build_has_no_errors() -> None:
+def test_compatible_fixture_build_has_no_errors(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    fixtures = {p.slug: p for p in list_fixture_products()}
+
+    def _get(slug_or_id: str, _settings=None):  # type: ignore[no-untyped-def]
+        return fixtures.get(slug_or_id)
+
+    monkeypatch.setattr("src.routers.builds.get_catalog_product", _get)
     response = client.post(
         "/v1/builds/evaluate",
         json={

@@ -4,11 +4,11 @@ Live adapters (when credentials present):
   - Best Buy Remix API
   - Amazon PA-API 5 (Associates)
 
-Stubs (never scrape):
-  - Newegg (seller Marketplace API ≠ catalog search)
-  - Micro Center (no public product API)
+Feed-gated (when NEWEGG_FEED_PATH / MICROCENTER_FEED_PATH set):
+  - Newegg manual/affiliate CSV/JSON (Marketplace seller API ≠ catalog search)
+  - Micro Center manual CSV/JSON (no public product API)
 
-Demo path: ``MockRetailerAdapter`` when ``allow_mock=True`` and no live keys.
+Demo path: ``MockRetailerAdapter`` when ``allow_mock=True`` and no live keys/feeds.
 """
 
 from __future__ import annotations
@@ -135,6 +135,12 @@ async def _fetch_for_product(
     adapter: RetailerAdapter,
     product: dict[str, Any],
 ) -> NormalizedListing | None:
+    match_product = getattr(adapter, "match_product", None)
+    if callable(match_product):
+        exact = match_product(product)
+        if exact is not None:
+            return exact
+
     query = product_search_query(product)
     listings = await adapter.fetch_listings(query)
     if isinstance(adapter, MockRetailerAdapter):
@@ -378,9 +384,10 @@ async def run_price_sync(
             "started_at": started,
             "finished_at": _now_iso(),
             "message": (
-                "No live retailer credentials configured. "
-                "Set BEST_BUY_API_KEY and/or Amazon PA-API keys on the API host (Railway) "
-                "and redeploy, or pass allow_mock=true for demo mock ingestion."
+                "No live retailer credentials or feeds configured. "
+                "Set BEST_BUY_API_KEY and/or Amazon PA-API keys, and/or "
+                "NEWEGG_FEED_PATH / MICROCENTER_FEED_PATH (CSV/JSON), then redeploy. "
+                "Or pass allow_mock=true for demo mock ingestion."
             ),
             "credentials_missing": credentials_missing,
             "credentials_required_next": credential_checklist(),

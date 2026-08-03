@@ -1,15 +1,19 @@
-"""Micro Center adapter — stub only (no public product API).
+"""Micro Center adapter — stub unless a manual CSV/JSON feed is configured.
 
 Micro Center does not publish a developer product/price API suitable for
-automated catalog ingestion. RigScout will not scrape store pages.
+automated catalog ingestion, and community staff have indicated there is no
+public affiliate product-feed program comparable to Amazon/Newegg networks.
 
-Future options (documented only): manual CSV import, affiliate deep links, or
-an official partner feed if Micro Center offers one.
+RigScout will not scrape store pages. Provide listings via ``MICROCENTER_FEED_PATH``
+(operator-maintained CSV/JSON).
 """
 
 from __future__ import annotations
 
+from typing import Any
+
 from src.adapters.base import NormalizedListing, RetailerAdapter
+from src.adapters.manual_feed import ManualFeedAdapter
 
 
 class MicroCenterAdapterNotConfigured(RuntimeError):
@@ -17,21 +21,40 @@ class MicroCenterAdapterNotConfigured(RuntimeError):
 
 
 class MicroCenterAdapter(RetailerAdapter):
-    """Stub adapter — implements the contract but refuses live fetches."""
+    """Stub unless ``MICROCENTER_FEED_PATH`` points at a CSV/JSON feed."""
 
     name = "microcenter"
-    status = "stub"
-    reason = (
-        "Micro Center has no public product/price API. "
-        "Use manual/CSV/affiliate import later. HTML scraping is not supported."
-    )
+
+    def __init__(self, *, feed_path: str | None = None) -> None:
+        self._feed_path = (feed_path or "").strip()
+        self._feed: ManualFeedAdapter | None = None
+        if self._feed_path:
+            self._feed = ManualFeedAdapter(self.name, self._feed_path)
+            self.status = "feed"
+            self.reason = f"Micro Center manual feed enabled ({self._feed_path})"
+        else:
+            self.status = "stub"
+            self.reason = (
+                "Micro Center has no public product/price API. "
+                "Set MICROCENTER_FEED_PATH to a CSV/JSON feed. "
+                "HTML scraping is not supported."
+            )
 
     @property
     def is_live_ready(self) -> bool:
-        return False
+        return self._feed is not None
+
+    def match_product(self, product: dict[str, Any]) -> NormalizedListing | None:
+        if self._feed is None:
+            return None
+        return self._feed.match_product(product)
 
     async def fetch_listings(self, query: str | None = None) -> list[NormalizedListing]:
-        raise MicroCenterAdapterNotConfigured(self.reason)
+        if self._feed is None:
+            raise MicroCenterAdapterNotConfigured(self.reason)
+        return await self._feed.fetch_listings(query)
 
     async def fetch_listing(self, external_id: str) -> NormalizedListing | None:
-        raise MicroCenterAdapterNotConfigured(self.reason)
+        if self._feed is None:
+            raise MicroCenterAdapterNotConfigured(self.reason)
+        return await self._feed.fetch_listing(external_id)

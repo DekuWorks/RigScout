@@ -109,11 +109,6 @@ export function ProductDetailPage() {
           </p>
           <h1 className="mt-1 font-display text-3xl font-bold">{product.name}</h1>
           <p className="mt-2 max-w-2xl text-sm text-[var(--muted)]">{product.beginner_blurb}</p>
-          {product.is_mock ? (
-            <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-rs-warning">
-              MOCK / placeholder listing data
-            </p>
-          ) : null}
         </div>
         <div className="rs-card min-w-[220px] p-4">
           <p className="text-xs text-[var(--muted)]">Best price</p>

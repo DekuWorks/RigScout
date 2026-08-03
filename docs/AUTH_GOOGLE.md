@@ -37,14 +37,16 @@ Wired in Supabase Auth → Google:
 
 Confirm the callback URL is listed under **Authorized redirect URIs** on that Google Cloud client.
 
-## Demo email login
+## Local demo email login (optional)
 
-Seeded accounts (after remote seed):
+Production has **no** demo users. For local RLS/UI checks only, apply `supabase/seed_demo.sql` after `db reset`, then:
 
 | Email | Password |
 |-------|----------|
 | `demo@rigscout.local` | `password123` |
 | `scout@rigscout.local` | `password123` |
+
+Otherwise create a real account (email or Google SSO).
 
 ## Local vs production `.env`
 

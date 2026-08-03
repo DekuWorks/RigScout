@@ -1,4 +1,4 @@
-"""Retailer adapter registry — credential detection + honest disabled reasons."""
+"""Retailer adapter registry — credential / feed detection + honest disabled reasons."""
 
 from __future__ import annotations
 
@@ -97,22 +97,27 @@ def credential_checklist() -> list[dict[str, Any]]:
         },
         {
             "source": "newegg",
-            "status": "stub",
-            "env": ["NEWEGG_API_KEY", "NEWEGG_SELLER_ID"],
+            "status": "feed_when_configured",
+            "env": ["NEWEGG_FEED_PATH"],
             "signup": "https://developer.newegg.com/",
             "docs": "https://developer.newegg.com/newegg_marketplace_api/",
             "notes": (
                 "Marketplace API is seller-only (inventory/orders). No public catalog search. "
-                "Keys alone do not enable RigScout price ingestion."
+                "Optional NEWEGG_API_KEY / NEWEGG_SELLER_ID do not enable RigScout ingestion. "
+                "Set NEWEGG_FEED_PATH to a CSV/JSON file or URL (affiliate export or manual). "
+                "See docs/feeds/ and docs/RETAILER_ADAPTERS.md."
             ),
         },
         {
             "source": "microcenter",
-            "status": "stub",
-            "env": [],
+            "status": "feed_when_configured",
+            "env": ["MICROCENTER_FEED_PATH"],
             "signup": None,
             "docs": "https://www.microcenter.com/",
-            "notes": "No public product API. Manual/CSV/affiliate later. No scraping.",
+            "notes": (
+                "No public product API and no public affiliate product feed. "
+                "Set MICROCENTER_FEED_PATH to a CSV/JSON file or URL. No scraping."
+            ),
         },
     ]
 
@@ -174,33 +179,55 @@ def plan_adapters(settings: Settings, *, allow_mock: bool = False) -> list[Adapt
             )
         )
 
-    # Stubs — always disabled for live sync (seller keys do not unlock catalog search)
     newegg = NeweggAdapter(
         api_key=settings.newegg_api_key or None,
         seller_id=settings.newegg_seller_id or None,
+        feed_path=settings.newegg_feed_path or None,
     )
-    plans.append(
-        AdapterPlan(
-            source="newegg",
-            retailer_spec=RETAILER_SPECS["newegg"],
-            adapter=newegg,
-            enabled=False,
-            reason=newegg.reason,
-            credentials_missing=(),
+    if newegg.is_live_ready:
+        plans.append(
+            AdapterPlan(
+                source="newegg",
+                retailer_spec=RETAILER_SPECS["newegg"],
+                adapter=newegg,
+                enabled=True,
+                reason=newegg.reason,
+            )
         )
-    )
+    else:
+        plans.append(
+            AdapterPlan(
+                source="newegg",
+                retailer_spec=RETAILER_SPECS["newegg"],
+                adapter=newegg,
+                enabled=False,
+                reason=newegg.reason,
+                credentials_missing=("NEWEGG_FEED_PATH",),
+            )
+        )
 
-    micro = MicroCenterAdapter()
-    plans.append(
-        AdapterPlan(
-            source="microcenter",
-            retailer_spec=RETAILER_SPECS["microcenter"],
-            adapter=micro,
-            enabled=False,
-            reason=micro.reason,
-            credentials_missing=(),
+    micro = MicroCenterAdapter(feed_path=settings.microcenter_feed_path or None)
+    if micro.is_live_ready:
+        plans.append(
+            AdapterPlan(
+                source="microcenter",
+                retailer_spec=RETAILER_SPECS["microcenter"],
+                adapter=micro,
+                enabled=True,
+                reason=micro.reason,
+            )
         )
-    )
+    else:
+        plans.append(
+            AdapterPlan(
+                source="microcenter",
+                retailer_spec=RETAILER_SPECS["microcenter"],
+                adapter=micro,
+                enabled=False,
+                reason=micro.reason,
+                credentials_missing=("MICROCENTER_FEED_PATH",),
+            )
+        )
 
     if allow_mock and not any(p.enabled for p in plans):
         plans.append(

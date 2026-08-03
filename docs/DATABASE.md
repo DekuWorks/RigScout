@@ -28,22 +28,37 @@ Phase 2 ships the first versioned migration:
 - `created_at` / `updated_at` with `set_updated_at` trigger
 - Money as integer **minor units** + ISO `currency`
 - `source_checked_at` / `recorded_at` for provenance
-- `is_mock` flags on retailers/listings for demo data
+- `is_mock` flags reserved for explicitly labeled non-production data (default seed has none)
 - Full-text index on product name/brand/model
 
 ## Apply locally
 
 ```bash
 supabase start
-supabase db reset   # migrations + seed.sql
+supabase db reset   # migrations + seed.sql (retailers + compatibility rules only)
 supabase status     # copy URL / anon / service_role into .env
 ```
 
-## Seed accounts (local MOCK)
+### Default seed (`seed.sql`) — production-safe
+
+- Real retailers: `amazon`, `newegg`, `bestbuy`, `microcenter` (`is_mock=false`)
+- Compatibility rules
+- **No** products, listings, price history, demo users, builds, or alerts
+
+### Optional local demo seed (`seed_demo.sql`)
+
+For UI demos only — **do not apply to hosted Supabase**:
+
+```bash
+# After db reset (optional):
+psql "$(supabase status -o env | sed -n 's/^DB_URL=//p')" -f supabase/seed_demo.sql
+```
+
+Or temporarily add `"./seed_demo.sql"` to `[db.seed].sql_paths` in `supabase/config.toml`.
 
 | Email | Password | Notes |
 |-------|----------|-------|
-| `demo@rigscout.local` | `password123` | Free tier demo builds/alerts |
+| `demo@rigscout.local` | `password123` | Local demo only |
 | `scout@rigscout.local` | `password123` | Second user for RLS isolation |
 
-Seed catalog includes 10 part categories, 5 mock retailers, current listings, ~90 days of history, compatibility examples, and sample notifications.
+Production: create a real account (email or Google SSO). There is no demo catalog in hosted environments.

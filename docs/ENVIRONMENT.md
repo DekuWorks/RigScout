@@ -42,7 +42,9 @@ Validated at startup in `apps/web/src/lib/env.ts` (Zod). Google OAuth is configu
 | `AMAZON_PAAPI_ACCESS_KEY` | For live Amazon sync | Associates + PA-API / Creators access |
 | `AMAZON_PAAPI_SECRET_KEY` | For live Amazon sync | With access key + partner tag |
 | `AMAZON_PAAPI_PARTNER_TAG` | For live Amazon sync | e.g. `yoursite-20` |
-| `NEWEGG_API_KEY` / `NEWEGG_SELLER_ID` | Unused for catalog | Seller Marketplace only — stub |
+| `NEWEGG_API_KEY` / `NEWEGG_SELLER_ID` | Unused for catalog | Seller Marketplace only — does not enable sync |
+| `NEWEGG_FEED_PATH` | For Newegg feed sync | Local path or https URL to CSV/JSON |
+| `MICROCENTER_FEED_PATH` | For Micro Center feed sync | Local path or https URL to CSV/JSON |
 
 ---
 

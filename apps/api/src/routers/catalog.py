@@ -1,7 +1,7 @@
 """Catalog + deals endpoints.
 
-Prefer Supabase-backed catalog when the service role is configured and products
-exist; otherwise serve the in-memory MOCK demo catalog.
+Reads the Supabase-backed catalog when the service role is configured.
+Returns an empty catalog (not fabricated demo products) when unseeded.
 """
 
 from __future__ import annotations
@@ -176,10 +176,8 @@ async def product_detail(slug: str, history_days: int = Query(default=90, ge=7, 
     ][:4]
 
     disclosure = (
-        "Demo links point to example.com placeholders. "
-        "When live affiliate links are enabled, disclosures will appear here."
-        if snapshot.is_mock or summary["is_mock"]
-        else "Prices are loaded from the RigScout catalog. Affiliate disclosures appear when live retailer links are enabled."
+        "Prices are loaded from the RigScout catalog. "
+        "Affiliate disclosures appear when live retailer links are enabled."
     )
 
     return {

@@ -29,7 +29,7 @@ supabase status   # copy URL + anon + service_role into .env
 supabase db reset # applies migrations + seed.sql (Phase 2+)
 ```
 
-Phase 2 includes `supabase/migrations/20260802180000_phase2_schema.sql` and rich `seed.sql`.
+Phase 2 includes `supabase/migrations/20260802180000_phase2_schema.sql`. Default `seed.sql` is production-safe (retailers + compatibility rules). Optional local UI demo data lives in `seed_demo.sql` — do not apply to hosted production.
 
 ```bash
 supabase start

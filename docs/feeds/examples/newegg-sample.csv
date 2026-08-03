@@ -1,0 +1,3 @@
+external_listing_id,product_url,title,price,currency,brand,category,condition,availability,shipping,product_slug,image_url
+N82E16819113780,https://www.newegg.com/amd-ryzen-7-7800x3d/p/N82E16819113780,AMD Ryzen 7 7800X3D,349.99,USD,AMD,cpu,new,in_stock,0,amd-ryzen-7-7800x3d,
+N82E16814126788,https://www.newegg.com/msi-geforce-rtx-4070-super/p/N82E16814126788,MSI GeForce RTX 4070 Super 12GB,599.99,USD,MSI,gpu,new,in_stock,0,nvidia-rtx-4070-super,

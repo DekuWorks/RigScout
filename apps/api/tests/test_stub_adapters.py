@@ -1,4 +1,4 @@
-"""Newegg / Micro Center stubs must refuse fetches (no scraping)."""
+"""Newegg / Micro Center stubs refuse fetches without feeds; seller keys do not enable sync."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ async def test_microcenter_stub_refuses_fetch() -> None:
         await adapter.fetch_listing("12345")
 
 
-def test_registry_disables_stubs_even_with_newegg_keys() -> None:
+def test_registry_disables_stubs_even_with_newegg_seller_keys() -> None:
     settings = Settings(
         best_buy_api_key="",
         amazon_paapi_access_key="",
@@ -34,11 +34,15 @@ def test_registry_disables_stubs_even_with_newegg_keys() -> None:
         amazon_paapi_partner_tag="",
         newegg_api_key="seller-secret",
         newegg_seller_id="NE123",
+        newegg_feed_path="",
+        microcenter_feed_path="",
     )
     plans = plan_adapters(settings, allow_mock=False)
     by_source = {p.source: p for p in plans}
     assert by_source["newegg"].enabled is False
     assert by_source["microcenter"].enabled is False
+    assert "NEWEGG_FEED_PATH" in by_source["newegg"].credentials_missing
+    assert "MICROCENTER_FEED_PATH" in by_source["microcenter"].credentials_missing
     assert by_source["bestbuy"].enabled is False
     assert by_source["amazon"].enabled is False
 

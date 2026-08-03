@@ -65,6 +65,8 @@ async def test_run_price_sync_skipped_without_credentials() -> None:
     result = await price_sync.run_price_sync(settings, allow_mock=False)
     assert result["status"] == "skipped"
     assert "BEST_BUY_API_KEY" in result["credentials_missing"]
+    assert "NEWEGG_FEED_PATH" in result["credentials_missing"]
+    assert "MICROCENTER_FEED_PATH" in result["credentials_missing"]
     assert any(d["source"] == "newegg" for d in result["disabled_sources"])
     assert any(d["source"] == "microcenter" for d in result["disabled_sources"])
 

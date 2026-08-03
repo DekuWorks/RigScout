@@ -30,8 +30,7 @@ export function DealsPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rs-accent">Deals</p>
         <h1 className="mt-1 font-display text-3xl font-bold">Trending price drops</h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Best deal scores and largest recent drops
-          {query.data?.is_mock ? " from the MOCK catalog" : " from the live catalog"}.
+          Best deal scores and largest recent drops from the live catalog.
         </p>
       </div>
 
@@ -86,7 +85,12 @@ export function DealsPage() {
 
 function DealSection({ title, items }: { title: string; items: DealCard[] }) {
   if (items.length === 0) {
-    return <EmptyState title={`No ${title.toLowerCase()}`} description="Try another category filter." />;
+    return (
+      <EmptyState
+        title={`No ${title.toLowerCase()}`}
+        description="Deals appear after products are synced into the catalog. Try another category filter once data exists."
+      />
+    );
   }
 
   return (
@@ -119,9 +123,6 @@ function DealSection({ title, items }: { title: string; items: DealCard[] }) {
                 {formatMoney(deal.price_minor, deal.currency)}
               </p>
               <PriceChange className="mt-1 justify-end" deltaMinor={deal.price_delta_minor} />
-              {deal.is_mock ? (
-                <p className="mt-2 text-[10px] uppercase tracking-wide text-[var(--muted)]">MOCK</p>
-              ) : null}
             </div>
           </Link>
         ))}

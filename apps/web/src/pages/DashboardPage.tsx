@@ -207,7 +207,7 @@ export function DashboardPage() {
           {deals.isError ? (
             <div className="mt-4">
               <ErrorState
-                message="Deals could not be loaded. Local demo still works when the API is offline."
+                message="Deals could not be loaded. Check that the API is reachable."
                 onRetry={() => void deals.refetch()}
               />
             </div>
@@ -215,7 +215,7 @@ export function DashboardPage() {
           {topDeal ? (
             <>
               <p className="mt-4 font-medium">{topDeal.name}</p>
-              <p className="text-sm text-[var(--muted)]">{topDeal.retailer} · MOCK</p>
+              <p className="text-sm text-[var(--muted)]">{topDeal.retailer}</p>
               <p className="mt-2 font-display text-2xl font-bold">
                 {formatMoney(topDeal.price_minor, topDeal.currency)}
               </p>
@@ -230,8 +230,8 @@ export function DashboardPage() {
           ) : !deals.isLoading && !deals.isError ? (
             <div className="mt-4">
               <EmptyState
-                title="No deals loaded"
-                description="Start the API to load mock deals, or browse Discover meanwhile."
+                title="No deals yet"
+                description="Deals appear after retailer sync fills the catalog. Browse Discover meanwhile."
                 action={
                   <Link to="/app/discover" className="rs-btn-secondary">
                     Browse Discover

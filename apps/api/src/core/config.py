@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     newegg_api_key: str = ""
     newegg_seller_id: str = ""
 
+    # Manual/affiliate CSV or JSON feeds (local path or http(s) URL). See RETAILER_ADAPTERS.md.
+    newegg_feed_path: str = ""
+    microcenter_feed_path: str = ""
+
     @property
     def cors_origins(self) -> list[str]:
         return [o.strip() for o in self.api_cors_origins.split(",") if o.strip()]
@@ -73,6 +77,14 @@ class Settings(BaseSettings):
             and self.amazon_paapi_secret_key.strip()
             and self.amazon_paapi_partner_tag.strip()
         )
+
+    @property
+    def newegg_feed_configured(self) -> bool:
+        return bool(self.newegg_feed_path.strip())
+
+    @property
+    def microcenter_feed_configured(self) -> bool:
+        return bool(self.microcenter_feed_path.strip())
 
 
 @lru_cache

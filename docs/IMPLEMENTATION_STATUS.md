@@ -8,7 +8,9 @@
 | Approved brand assets | Provided in Cursor chat — **copied into repo** |
 | Prior application code | None |
 | Supabase project | Schema now in-repo (Phase 2); remote project still optional |
-| Live retailer credentials | **None** (Best Buy / Amazon / Newegg keys absent in env, GitHub, Railway — names checked only) |
+| Live retailer credentials | **None** (Best Buy / Amazon keys absent — names checked only) |
+| Newegg / Micro Center | **Feed-gated stubs** (no public catalog API; set `*_FEED_PATH` for CSV/JSON) |
+| Production catalog seed | **No demo products** (`seed.sql` = retailers + compatibility rules only) |
 
 **Remote:** https://github.com/DekuWorks/RigScout
 
@@ -47,10 +49,13 @@
 - [x] Retailer ingestion path (adapters + sync job + token-gated endpoint + GH Action)
   - [x] Best Buy Remix adapter — **live-ready**; needs `BEST_BUY_API_KEY` (not set yet)
   - [x] Amazon PA-API 5 adapter (SigV4) — **live-ready**; needs Associates keys (not set yet); PA-API 5 deprecated → Creators API note in docs
-  - [x] Newegg stub — Marketplace API is seller-only; no catalog search / no scraping
-  - [x] Micro Center stub — no public API; no scraping
-  - [x] Mock path via `allow_mock` when no live keys
-  - [ ] Live production sync with real retailer credentials *(blocked on user keys)*
+  - [x] Newegg feed-gated stub — Marketplace API is seller-only; CSV/JSON via `NEWEGG_FEED_PATH`
+  - [x] Micro Center feed-gated stub — no public API; CSV/JSON via `MICROCENTER_FEED_PATH`
+  - [x] Shared manual feed importer + CLI `import-feed` + job `import-retailer-feed`
+  - [x] Production path: no demo catalog fallback (empty catalog when Supabase unseeded)
+  - [x] Default `seed.sql` production-safe; optional `seed_demo.sql` for local only
+  - [x] Mock path via `allow_mock` when no live keys/feeds (explicit opt-in only)
+  - [ ] Live production sync with real retailer credentials/feeds *(blocked on user keys/feeds)*
 
 ### Phase 4 — Build Lab
 - [x] Build CRUD with Supabase ownership and browser-local demo fallback
@@ -106,9 +111,15 @@
 | Slate | `#64748B` |
 | Off-white | `#F8FAFC` |
 
-## Demo seed accounts (local)
+## Local demo seed (optional only)
+
+Default `supabase db reset` does **not** load demo products or demo users.
+
+Optional: apply `supabase/seed_demo.sql` locally (never on hosted production). Accounts in that file:
 
 | Email | Password |
 |-------|----------|
 | `demo@rigscout.local` | `password123` |
 | `scout@rigscout.local` | `password123` |
+
+Production: sign up with a real email or Google SSO.

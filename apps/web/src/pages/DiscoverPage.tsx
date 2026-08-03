@@ -52,8 +52,8 @@ export function DiscoverPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rs-accent">Discover</p>
         <h1 className="mt-1 font-display text-3xl font-bold">Find PC parts</h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          Compare mock retailer prices, deal scores, and recent movement. Live sources activate when
-          credentials are configured.
+          Compare retailer prices, deal scores, and recent movement. The catalog fills as live APIs
+          or retailer feeds sync products.
         </p>
       </div>
 
@@ -163,7 +163,6 @@ export function DiscoverPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-[var(--muted)]">
               {query.data ? `${query.data.total} parts` : "Loading…"}
-              {query.data?.is_mock ? " · MOCK catalog" : null}
             </p>
             <label className="flex items-center gap-2 text-sm">
               <span className="text-[var(--muted)]">Sort</span>
@@ -197,8 +196,12 @@ export function DiscoverPage() {
 
           {query.data && query.data.items.length === 0 ? (
             <EmptyState
-              title="No parts matched"
-              description="Try clearing filters or searching a different brand/category."
+              title={query.data.total === 0 && !filters.q && !filters.category ? "Catalog is empty" : "No parts matched"}
+              description={
+                query.data.total === 0 && !filters.q && !filters.category
+                  ? "No products have been synced yet. Configure Best Buy / Amazon keys or Newegg / Micro Center feeds, then run price sync."
+                  : "Try clearing filters or searching a different brand/category."
+              }
             />
           ) : null}
 

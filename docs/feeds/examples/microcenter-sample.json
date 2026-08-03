@@ -1,0 +1,30 @@
+{
+  "source": "microcenter",
+  "listings": [
+    {
+      "external_listing_id": "654321",
+      "product_url": "https://www.microcenter.com/product/654321/amd-ryzen-7-7800x3d",
+      "title": "AMD Ryzen 7 7800X3D",
+      "price": 329.99,
+      "currency": "USD",
+      "brand": "AMD",
+      "category": "cpu",
+      "condition": "new",
+      "availability": "in_stock",
+      "shipping": 0,
+      "product_slug": "amd-ryzen-7-7800x3d"
+    },
+    {
+      "external_listing_id": "612345",
+      "product_url": "https://www.microcenter.com/product/612345/gskill-flare-x5-32gb",
+      "title": "G.Skill Flare X5 32GB DDR5-6000",
+      "price_minor": 9499,
+      "currency": "USD",
+      "brand": "G.Skill",
+      "category": "ram",
+      "condition": "new",
+      "availability": "in_stock",
+      "product_slug": "gskill-32gb-ddr5-6000"
+    }
+  ]
+}

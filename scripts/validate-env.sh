@@ -42,13 +42,15 @@ case "$MODE" in
     done
     if has_nonempty "ALERT_JOB_TOKEN"; then pass "ALERT_JOB_TOKEN"; else warn "ALERT_JOB_TOKEN (job route disabled)"; fi
     if has_nonempty "API_CORS_ORIGINS"; then pass "API_CORS_ORIGINS"; else warn "API_CORS_ORIGINS (defaults in code)"; fi
-    echo "Retailer APIs (optional until live ingestion):"
+    echo "Retailer APIs / feeds (optional until live ingestion):"
     if has_nonempty "BEST_BUY_API_KEY"; then pass "BEST_BUY_API_KEY"; else warn "BEST_BUY_API_KEY (Best Buy sync skipped)"; fi
     if has_nonempty "AMAZON_PAAPI_ACCESS_KEY" && has_nonempty "AMAZON_PAAPI_SECRET_KEY" && has_nonempty "AMAZON_PAAPI_PARTNER_TAG"; then
       pass "AMAZON_PAAPI_* (access + secret + partner tag)"
     else
       warn "AMAZON_PAAPI_* (Amazon sync skipped until all three set)"
     fi
+    if has_nonempty "NEWEGG_FEED_PATH"; then pass "NEWEGG_FEED_PATH"; else warn "NEWEGG_FEED_PATH (Newegg feed sync skipped)"; fi
+    if has_nonempty "MICROCENTER_FEED_PATH"; then pass "MICROCENTER_FEED_PATH"; else warn "MICROCENTER_FEED_PATH (Micro Center feed sync skipped)"; fi
     ;;
   production-checklist)
     echo "GitHub Actions secrets (names only via gh):"
@@ -82,7 +84,8 @@ case "$MODE" in
     echo "  - Set Railway: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ALERT_JOB_TOKEN, API_CORS_ORIGINS"
     echo "  - Set GitHub variable API_BASE_URL + secret ALERT_JOB_TOKEN"
     echo "  - Optionally set variable VITE_API_BASE_URL and redeploy Pages"
-    echo "  - For live prices: BEST_BUY_API_KEY and/or AMAZON_PAAPI_* then redeploy (see docs/RETAILER_ADAPTERS.md)"
+    echo "  - For live prices: BEST_BUY_API_KEY and/or AMAZON_PAAPI_* and/or NEWEGG_FEED_PATH / MICROCENTER_FEED_PATH then redeploy (see docs/RETAILER_ADAPTERS.md)"
+    echo "  - Production catalog has no demo seed; empty Discover/Deals until sync succeeds"
     ;;
   *)
     echo "Usage: $0 [local|production-checklist]"
